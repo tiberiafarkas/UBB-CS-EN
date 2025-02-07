@@ -1,0 +1,131 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, scanf, printf              ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                  import scanf msvcrt.dll
+    10                                  import printf msvcrt.dll
+    11                                  extern module             ;import the module
+    12                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    13                                  
+    14                                  global number
+    15                                  global nr
+    16                                  global digits
+    17                                  global cnt
+    18                                  global s2
+    19                                  global cnt2
+    20                                  global digit
+    21                                                            
+    22                                  ; our data is declared here (the variables needed by our program)
+    23                                  segment data use32 class=data
+    24                                      ;Read a string of integers s1 (represented on doublewords) in base 10. 
+    25                                      ;Determine and display the string s2 composed by the digits in the hundreds place of each integer in the string s1.
+    26                                      ;Example:    The string s1: 5892, 456, 33, 7, 245
+    27                                      ;The string s2: 8,    4,   0,  0, 2
+    28                                  
+    29 00000000 486F77206D616E7920-         question db "How many numbers do you want to introduce? (Must be more than 0!!)  ", 0
+    29 00000009 6E756D626572732064-
+    29 00000012 6F20796F752077616E-
+    29 0000001B 7420746F20696E7472-
+    29 00000024 6F647563653F20284D-
+    29 0000002D 757374206265206D6F-
+    29 00000036 7265207468616E2030-
+    29 0000003F 212129202000       
+    30 00000045 256400                      format1 db "%d", 0
+    31 00000048 6E756D626572203D20-         message db "number = %d", 13, 10, 0
+    31 00000051 25640D0A00         
+    32 00000056 696E74726F64756365-         message1 db "introduce a new number = ", 0
+    32 0000005F 2061206E6577206E75-
+    32 00000068 6D626572203D2000   
+    33 00000070 746865206E756D6265-         message2 db "the number introduced is: %d", 13, 10, 0
+    33 00000079 7220696E74726F6475-
+    33 00000082 6365642069733A2025-
+    33 0000008B 640D0A00           
+    34 0000008F 746865206469676974-         message3 db "the digit in the hundreads place is: %d", 13, 10, 0
+    34 00000098 20696E207468652068-
+    34 000000A1 756E64726561647320-
+    34 000000AA 706C6163652069733A-
+    34 000000B3 2025640D0A00       
+    35 000000B9 <res 00000004>              number resd 1
+    36 000000BD 00                          nr db 0
+    37 000000BE <res 00000010>              digits resq 2
+    38 000000CE <res 00000001>              cnt resb 1
+    39 000000CF <res 00000008>              s2 resq 1
+    40 000000D7 <res 00000001>              cnt2 resb 1
+    41 000000D8 00                          digit db 0
+    42                                      
+    43                                      ; ...
+    44                                  
+    45                                  ; our code starts here
+    46                                  segment code use32 class=code
+    47                                      start:
+    48                                          ; ...
+    49 00000000 68[00000000]                    push dword question
+    50 00000005 FF15[00000000]                  call [printf]
+    51 0000000B 83C604                          add esi, 4
+    52                                          
+    53 0000000E 68[B9000000]                    push dword number       ;we read how many numbers to be introduced from the console
+    54 00000013 68[45000000]                    push dword format1
+    55 00000018 FF15[00000000]                  call [scanf]
+    56 0000001E 83C608                          add esi, 4*2
+    57                                          
+    58 00000021 FF35[B9000000]                  push dword[number]          ;we check the number has been read correctly
+    59 00000027 68[48000000]                    push dword message
+    60 0000002C FF15[00000000]                  call [printf]
+    61 00000032 83C608                          add esi, 4 * 2
+    62                                          
+    63                                          ;now we need to read the rest of the numbers
+    64                                          ;while ecx > 0 
+    65                                          
+    66 00000035 8B0D[B9000000]                  mov ecx, dword[number]
+    67                                          
+    68                                      while_loop:
+    69 0000003B 890D[B9000000]                  mov dword[number], ecx      ;save the value of ecx because it will be changed because of the calls
+    70                                          
+    71 00000041 68[56000000]                    push dword message1
+    72 00000046 FF15[00000000]                  call [printf]
+    73 0000004C 83C604                          add esi, 4
+    74                                          
+    75 0000004F 68[BD000000]                    push dword nr           ;we read the numbers
+    76 00000054 68[45000000]                    push dword format1
+    77 00000059 FF15[00000000]                  call [scanf]
+    78 0000005F 83C608                          add esi, 4*2
+    79                                          
+    80 00000062 FF35[BD000000]                  push dword[nr]          ;print them to check if everything is alright
+    81 00000068 68[70000000]                    push dword message2
+    82 0000006D FF15[00000000]                  call [printf]
+    83 00000073 83C608                          add esi, 4*2
+    84                                          
+    85                                          ;find the hundread placed digits of the numbers
+    86                                                  
+    87 00000076 E8(00000000)                    call module
+    88                                       
+    89                                          ;turn to display the digits:
+    90                                          
+    91                                          display_digits:
+    92 0000007B BA00000000                          mov edx, 0
+    93 00000080 8A15[D7000000]                      mov dl, byte[cnt2]
+    94 00000086 FECA                                dec dl
+    95 00000088 8A9A[CF000000]                      mov bl, byte[s2 + edx]
+    96 0000008E 881D[D8000000]                      mov byte[digit], bl
+    97 00000094 FF35[D8000000]                      push dword[digit]
+    98 0000009A 68[8F000000]                        push dword message3
+    99 0000009F FF15[00000000]                      call [printf]
+   100 000000A5 83C408                              add esp, 4*2
+   101                                              
+   102                                          
+   103                                          next:
+   104 000000A8 8B0D[B9000000]                      mov ecx, dword[number]      ;restore the value of ecx
+   105 000000AE 49                                  dec ecx
+   106 000000AF BB00000000                          mov ebx, 0
+   107 000000B4 39D9                                cmp ecx, ebx
+   108 000000B6 7583                                jne while_loop
+   109                                          
+   110                                          
+   111                                      
+   112                                          ; exit(0)
+   113 000000B8 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   114 000000BA FF15[00000000]                  call    [exit]       ; call exit to terminate the program

@@ -1,0 +1,57 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-8\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{AB2AA7E1-08E5-40B4-B787-6C3007AFD7C1}|hw-lb12-8.vcxproj|C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-8\\hw-lb12-8.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{AB2AA7E1-08E5-40B4-B787-6C3007AFD7C1}|hw-lb12-8.vcxproj|solutionrelative:hw-lb12-8.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "hw-lb12-22.cpp",
+              "DocumentMoniker": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp",
+              "RelativeDocumentMoniker": "..\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp",
+              "ToolTip": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp",
+              "RelativeToolTip": "..\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-12-29T18:37:14.184Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "hw-lb12-8.cpp",
+              "DocumentMoniker": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-8\\hw-lb12-8.cpp",
+              "RelativeDocumentMoniker": "hw-lb12-8.cpp",
+              "ToolTip": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-8\\hw-lb12-8.cpp",
+              "RelativeToolTip": "hw-lb12-8.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-12-29T18:30:45.465Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

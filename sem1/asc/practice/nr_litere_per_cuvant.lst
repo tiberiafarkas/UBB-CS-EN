@@ -1,0 +1,83 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, printf, gets               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  import printf msvcrt.dll
+    11                                  import gets msvcrt.dll
+    12                                  
+    13                                  ;4.	Se citeste o propozitie de la tastatura. Sa se numere literele din fiecare cuvant si sa se afiseze aceste numere pe ecran.                          
+    14                                                            
+    15                                  ; our data is declared here (the variables needed by our program)
+    16                                  segment data use32 class=data
+    17                                      ; ...
+    18                                      
+    19 00000000 00<rept>                    destination times 100 db 0
+    20 00000064 00<rept>                    source times 100 db 0
+    21 000000C8 256400                      format_w db "%d", 0
+    22 000000CB 696E74726F64752070-         message db "introdu propozitia:", 10, 0
+    22 000000D4 726F706F7A69746961-
+    22 000000DD 3A0A00             
+    23 000000E0 00                          counter db 0
+    24 000000E1 2000                        space db " ", 0
+    25                                  
+    26                                  ; our code starts here
+    27                                  segment code use32 class=code
+    28                                      start:
+    29                                          ; ...
+    30                                          
+    31 00000000 68[CB000000]                    push dword message
+    32 00000005 FF15[00000000]                  call [printf]
+    33 0000000B 83C404                          add esp, 4
+    34                                          
+    35                                          ;read the sentence
+    36 0000000E 68[64000000]                    push dword source
+    37 00000013 FF15[00000000]                  call [gets]
+    38 00000019 83C404                          add esp, 4
+    39                                          
+    40 0000001C BE[64000000]                    mov esi, source ;store the offset of the text in esi
+    41 00000021 BF[00000000]                    mov edi, destination
+    42 00000026 B900000000                      mov ecx, 0
+    43                                          
+    44                                          repeat:
+    45 0000002B 803E00                              cmp byte[esi], 0  ;it means we reached the end
+    46 0000002E 7434                                je final
+    47                                              
+    48 00000030 803E20                              cmp byte[esi], ' '    ;we iterate over a word
+    49 00000033 7502                                jne count_letter
+    50 00000035 7406                                je print_counter
+    51                                              
+    52                                              count_letter:
+    53 00000037 41                                      inc ecx
+    54 00000038 83C601                                  add esi, 1
+    55 0000003B EBEE                                    jmp repeat
+    56                                                  
+    57                                              print_counter:
+    58 0000003D 51                                      push dword ecx
+    59 0000003E 68[C8000000]                            push dword format_w
+    60 00000043 FF15[00000000]                          call [printf]
+    61 00000049 83C408                                  add esp, 4 * 2
+    62                                                  
+    63                                                  ;print space 
+    64 0000004C 68[E1000000]                            push dword space
+    65 00000051 FF15[00000000]                          call [printf]
+    66 00000057 83C404                                  add esp, 4
+    67                                                  
+    68 0000005A B900000000                              mov ecx, 0 ;reinitialize the counter to 0 for the next word
+    69                                                  
+    70 0000005F 83C601                                  add esi, 1
+    71 00000062 EBC7                                    jmp repeat
+    72                                                  
+    73                                          final:
+    74 00000064 51                                  push dword ecx
+    75 00000065 68[C8000000]                        push dword format_w
+    76 0000006A FF15[00000000]                      call [printf]
+    77 00000070 83C408                              add esp, 4 * 2
+    78                                          
+    79                                          ; exit(0)
+    80 00000073 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    81 00000075 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

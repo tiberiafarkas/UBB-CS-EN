@@ -1,0 +1,102 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, gets, printf
+     8                                  import gets msvcrt.dll
+     9                                  import printf msvcrt.dll               ; tell nasm that exit exists even if we won't be defining it
+    10                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    11                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    12                                  
+    13                                  ;5.	Se citeste de la tastatura un sir de caractere (litere mici si litere mari, cifre, caractere speciale, etc). Sa se formeze un sir nou doar cu literele mici si un sir nou doar cu literele mari. Sa se afiseze cele
+    14                                                            
+    15                                  ; our data is declared here (the variables needed by our program)
+    16                                  segment data use32 class=data
+    17                                      ; ...
+    18                                  
+    19 00000000 00<rept>                    source times 100 db 0
+    20 00000064 00                          db 0
+    21 00000065 00<rept>                    small_letters times 100 db 0
+    22 000000C9 00                          db 0
+    23 000000CA 00<rept>                    capital_letters times 100 db 0
+    24 0000012E 00                          db 0
+    25 0000012F 25730A00                    format_rw db "%s", 10, 0
+    26 00000133 696E74726F64752074-         message db "introdu text: ", 10, 0
+    26 0000013C 6578743A200A00     
+    27                                      
+    28                                      
+    29                                  ; our code starts here
+    30                                  segment code use32 class=code
+    31                                      start:
+    32                                          ; ...
+    33                                          
+    34 00000000 68[33010000]                    push dword message
+    35 00000005 FF15[00000000]                  call [printf]
+    36 0000000B 83C404                          add esp, 4
+    37                                          
+    38 0000000E 68[00000000]                    push dword source   ;read the text
+    39 00000013 FF15[00000000]                  call [gets]
+    40 00000019 83C404                          add esp, 4
+    41                                          
+    42 0000001C BE[00000000]                    mov esi, source
+    43 00000021 BF[65000000]                    mov edi, small_letters
+    44 00000026 BB[CA000000]                    mov ebx, capital_letters
+    45                                          
+    46                                          repeat:
+    47 0000002B 803E00                              cmp byte[esi], 0 ;we reached the end of the text
+    48 0000002E 7437                                je final
+    49                                              
+    50 00000030 803E61                              cmp byte[esi], 'a' 
+    51 00000033 7207                                jb check_capitals
+    52                                              
+    53 00000035 803E7A                              cmp byte[esi], 'z'
+    54 00000038 7428                                je next
+    55                                              
+    56 0000003A EB18                                jmp small_let   ;if we reached here we have to deal with small letters
+    57                                              
+    58                                              check_capitals:
+    59 0000003C 803E41                                  cmp byte[esi], 'A'
+    60 0000003F 7221                                    jb next
+    61                                                  
+    62 00000041 803E5A                                  cmp byte[esi], 'Z'
+    63 00000044 771C                                    ja next
+    64                                                  
+    65                                                  capitals:
+    66 00000046 B800000000                                  mov eax, 0
+    67 0000004B 8A06                                        mov al, byte[esi]
+    68 0000004D 8803                                        mov byte[ebx], al   ;we add the letter in the capital_letters sequence
+    69                                                      
+    70 0000004F 83C301                                      add ebx, 1
+    71 00000052 EB0E                                        jmp next
+    72                                                      
+    73                                              small_let:
+    74 00000054 B800000000                              mov eax, 0
+    75 00000059 8A06                                    mov al, byte[esi]
+    76 0000005B 8807                                    mov byte[edi], al   ;we add the letter in the small_letters sequence
+    77                                                  
+    78 0000005D 83C701                                  add edi, 1
+    79 00000060 EB00                                    jmp next
+    80                                                      
+    81                                              next:
+    82 00000062 83C601                                  add esi, 1
+    83 00000065 EBC4                                    jmp repeat
+    84                                                  
+    85                                          final:            
+    86                                              ;print the 2 sequences
+    87 00000067 68[65000000]                        push dword small_letters
+    88 0000006C 68[2F010000]                        push dword format_rw
+    89 00000071 FF15[00000000]                      call [printf]
+    90 00000077 83C408                              add esp, 4 * 2
+    91                                              
+    92 0000007A 68[CA000000]                        push dword capital_letters
+    93 0000007F 68[2F010000]                        push dword format_rw
+    94 00000084 FF15[00000000]                      call [printf]
+    95 0000008A 83C408                              add esp, 4 * 2
+    96                                          
+    97                                                      
+    98                                      
+    99                                          ; exit(0)
+   100 0000008D 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   101 0000008F FF15[00000000]                  call    [exit]       ; call exit to terminate the program

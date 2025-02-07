@@ -1,0 +1,118 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, printf, scanf, fopen, fclose, fscanf, fprintf            
+     8                                  import exit msvcrt.dll     
+     9                                  import printf msvcrt.dll     ; indicating to the assembler that the printf fct can be found in the msvcrt.dll library
+    10                                  import scanf msvcrt.dll      ; similar for scanf
+    11                                  import fscanf msvcrt.dll
+    12                                  import fopen msvcrt.dll
+    13                                  import fclose msvcrt.dll
+    14                                  import fprintf msvcrt.dll
+    15                                  
+    16                                  
+    17                                  ; our data is declared here (the variables needed by our program)
+    18                                  segment data use32 class=data
+    19                                      ; ...
+    20                                      
+    21                                      ;exemplul 1:
+    22                                      ;a dd 10
+    23                                      ;b dd 20
+    24                                      ;message db '%d + %d = %d', 0
+    25                                  
+    26                                      ;exemplul 2:
+    27                                      ;a dd 0
+    28                                      ;b dd 0
+    29                                      ;format db '%d %d', 0
+    30                                      
+    31 00000000 00000000                    f dd 0
+    32 00000004 00000000                    g dd 0
+    33 00000008 696E2E7478742E7478-         file1 db "in.txt.txt", 0
+    33 00000011 7400               
+    34 00000013 7200                        access_r db "r", 0
+    35 00000015 00000000                    a dd 0
+    36 00000019 00000000                    b dd 0
+    37 0000001D 256420256400                format_r db "%d %d", 0
+    38 00000023 6F75742E74787400            file2 db "out.txt", 0
+    39 0000002B 7700                        access_w db "w", 0
+    40 0000002D 256400                      format_w db "%d", 0
+    41                                      
+    42                                      
+    43                                  ; our code starts here
+    44                                  segment code use32 class=code
+    45                                      start:
+    46                                          ; ...
+    47                                          
+    48 00000000 68[13000000]                    push dword access_r
+    49 00000005 68[08000000]                    push dword file1
+    50 0000000A FF15[00000000]                  call [fopen]
+    51 00000010 83C408                          add esp, 4*2
+    52 00000013 83F800                          cmp eax, 0
+    53 00000016 747E                            jz out
+    54 00000018 A3[00000000]                    mov dword[f], eax
+    55 0000001D 68[19000000]                    push dword b
+    56 00000022 68[15000000]                    push dword a
+    57 00000027 68[1D000000]                    push dword format_r
+    58 0000002C FF35[00000000]                  push dword[f]
+    59 00000032 FF15[00000000]                  call [fscanf]
+    60 00000038 83C410                          add esp, 4*4
+    61 0000003B FF35[00000000]                  push dword[f]
+    62 00000041 FF15[00000000]                  call [fclose]
+    63 00000047 83C404                          add esp, 4
+    64 0000004A 68[2B000000]                    push dword access_w
+    65 0000004F 68[23000000]                    push dword file2
+    66 00000054 FF15[00000000]                  call [fopen]
+    67 0000005A 83C408                          add esp, 4*2
+    68 0000005D 83F800                          cmp eax, 0
+    69 00000060 7434                            jz out
+    70 00000062 A3[04000000]                    mov dword[g], eax
+    71 00000067 A1[15000000]                    mov eax, dword[a]
+    72 0000006C 0305[19000000]                  add eax, dword[b]
+    73 00000072 50                              push eax
+    74 00000073 68[2D000000]                    push dword format_w
+    75 00000078 FF35[04000000]                  push dword [g]
+    76 0000007E FF15[00000000]                  call [fprintf]
+    77 00000084 83C40C                          add esp, 4*3
+    78 00000087 FF35[04000000]                  push dword[g]
+    79 0000008D FF15[00000000]                  call [fclose]
+    80 00000093 83C404                          add esp, 4
+    81                                          
+    82                                          out:
+    83 00000096 6A00                                push 0
+    84 00000098 FF15[00000000]                      call [exit]
+    85                                          
+    86                                          ;teoretic exemplul 2 practic NU-MI CITESTE NIMIC
+    87                                          ;push dword b
+    88                                          ;push dword a
+    89                                          ;push dword format
+    90                                          ;call [scanf]
+    91                                          ;add esp, 4*3
+    92                                          ;
+    93                                          ;mov eax, [a]
+    94                                          ;add eax, [b]
+    95                                          ;push eax
+    96                                          ;push dword[a]
+    97                                          ;push dword[b]
+    98                                          ;push dword message
+    99                                          ;call [printf]
+   100                                          ;add esp, 4*4
+   101                                          
+   102                                          
+   103                                          
+   104                                          ;exemplul 1:
+   105                                          ;mov eax, [a]
+   106                                          ;add eax, [b]
+   107                                          ;push eax,
+   108                                          ;push dword[b]
+   109                                          ;push dword[a]
+   110                                          ;push dword message
+   111                                          ;call [printf]
+   112                                          ;add esp, 4*4
+   113                                      
+   114                                      
+   115                                          ; exit(0)
+   116 0000009E 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   117 000000A0 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

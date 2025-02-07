@@ -1,0 +1,116 @@
+The 8 general registers of the EU (Executive Unit)
+
+Definition of registers : Storage capacities, very small in terms of size (8, 16, 32 or 64 bits) but very fast as access speed, used to temporary store the operands with which a processor currently works.
+
+Operands- Data (variables), Commands codes, Addresses
+((16 bits programming - no restrictions))
+Every architecture has:
+
+1. E AX - Accumulator register (most used register in every architecture and it is used by the most of the instructions as one of their operands)
+
+((32 bits- every register has an E in front (Extended AX)))
+
+2. E BX - Base register (starting address of some entity)
+
+Definition of Data types : structure + associated operations. In assembly language it's a very primitive concept -> the SIZE of representation. No associated operations.
+
+Bit - smallest unit of representing the information
+Byte - smallest accesible unit -//- (addressable unit)
+
+byte - 8 bits db
+word - 16 bits dw
+doubleword - 32 bits dd
+quadword - 64 bits dq
+
+a db 8 (initialising a with value 8)
+
+32 bits architecture cant work directly with 64 bits (need to combine registers)
+
+3. E CX - Counter register (mostly used as numerical upper limit for instructions that need repetitive runs)
+
+4. E DX - Data register (frequently used with other registers ((mostly with EAX)) when the result exceeds a double word)
+
+What happens when you add/substract a byte from a byte?
+
+b +/- b -> b
+
+w +/- w -> w
+
+dw +/- dw -> dw
+
+dq +/- dq -> ? (operations on more than 32 bits aren't possible)
+
+
+op1 m pos
+op2 n pos
+_________
+op1 + op2 -> max(m,n)[+1]
+
+op1 * op2 -> m+n
+
+
+b * b -> w
+
+w * w -> dw
+
+dd * dd -> dq
+
+NB! 
+We only have overflow when adding/substracting/dividing.
+
+No overflow when multiplying (it already has enough reserved space) 
+
+w / b -> b
+
+dd / w -> w
+
+dq / dd -> dd
+
+-> dq : EDX:EAX
+
+ADD op1, op2
+SUB op1, op2
+
+MUL op1   \
+	   ->  one operand is explicit and the other is implicit		
+DIV op1   /
+
+     EAX
+|__|_AH_|_AL_|
+      \AX/
+
+NB! Any of the 8 registers can act as a base.
+
+5. ESP - Stack Pointer\				points to the last element introduced in the stack
+			-> Stack registers
+6. EBP - Base Pointer /				points to the first element introduced in the stack
+
+Stack = Data structure 
+
+Memory as a raw entity is not organized, just a bunch of 0s and 1s.
+
+Stack, Queue, Heap -> The 3 basic data structures
+
+SS - Stack Segment (pointer) 
+
+
+Why from these 17 registers 3 of them are focusing on working with the stack, and none of them are working with queue and heap? [possible exam question]
+
+
+
+Any running program obeys the lifo discipline -> any architecture is focused on stack
+						(the programming is interested in the stack and heap)
+
+
+7. ESI - Source Index
+
+8. EDI - Destination Index 
+
+a[1042] = *(a+1042) aritmetica de pointeri
+
+* - dereferencing operator (returns the address)
+
+x(adresa) := x(continutul din memorie) + 1
+
+
+

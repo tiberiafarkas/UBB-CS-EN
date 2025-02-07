@@ -1,0 +1,3 @@
+The number of 2-dimensional subspaces of the vector space Z^2_2 over Z_2 is 1
+A basis for each subspace is:
+((0, 1), (1, 0))

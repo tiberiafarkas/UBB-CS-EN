@@ -1,0 +1,40 @@
+     1                                  ; The following program should read a number and print the message together with the number on the screen.
+     2                                  bits 32
+     3                                  global start        
+     4                                  
+     5                                  ; declaring extern functions used in the program
+     6                                  extern exit, printf, scanf            
+     7                                  import exit msvcrt.dll     
+     8                                  import printf msvcrt.dll     ; indicating to the assembler that the printf fct can be found in the msvcrt.dll library
+     9                                  import scanf msvcrt.dll      ; similar for scanf
+    10                                                            
+    11                                  segment  data use32 class=data
+    12 00000000 00                      	n db 0       ; this is the variable where we store the number read from keyboard
+    13 00000001 4E756D6172756C2063-     	message  db "Numarul citit este n= %d", 0  
+    13 0000000A 697469742065737465-
+    13 00000013 206E3D20256400     
+    14 0000001A 256400                  	format  db "%d", 0  ; %d <=> a decimal number (base 10)
+    15                                      
+    16                                  segment  code use32 class=code
+    17                                      start:
+    18                                                                                 
+    19                                          ; calling scanf(format, n) => we read the number and store it in the variable n
+    20                                          ; push parameters on the stack from right to left
+    21 00000000 68[00000000]                    push  dword n       ; ! address of n, not the value
+    22 00000005 68[1A000000]                    push  dword format
+    23 0000000A FF15[00000000]                  call  [scanf]       ; call scanf for reading
+    24 00000010 83C408                          add  esp, 4 * 2     ; taking parameters out of the stack; 4 = dimension of a dword; 2 = nr of parameters
+    25                                          
+    26                                          ;convert n to dword for pushing its value on the stack 
+    27 00000013 B800000000                      mov  eax,0
+    28 00000018 A0[00000000]                    mov  al,[n]
+    29                                          
+    30                                          ;print the message and the value of n
+    31 0000001D 50                              push  eax
+    32 0000001E 68[01000000]                    push  dword message 
+    33 00000023 FF15[00000000]                  call  [printf]
+    34 00000029 83C408                          add  esp,4*2 
+    35                                          
+    36                                          ; exit(0)
+    37 0000002C 6A00                            push  dword 0     ; push the parameter for exit on the stack
+    38 0000002E FF15[00000000]                  call  [exit]       ; call exit

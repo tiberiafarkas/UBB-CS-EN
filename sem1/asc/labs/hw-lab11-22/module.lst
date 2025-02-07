@@ -1,0 +1,72 @@
+     1                                  ;%ifndef _MODULE_ASM_ ; continue if _BASE8_ASM_ is undefined
+     2                                  ;%define _MODULE_ASM_ ; make sure that it is defined
+     3                                  ;                        ; otherwise, %include allows only one inclusionbits 32 ; assembling for the 32 bits architecture
+     4                                  ;
+     5                                  
+     6                                  ;find the hundread placed digits of the numbers
+     7                                  ;this part of the program will be moved in a different module after i finish with it
+     8                                  
+     9                                  
+    10                                  bits 32                         
+    11                                  segment code use32 public code
+    12                                  global module
+    13                                  
+    14                                  ;convert the hexa number in decimal
+    15                                  module:
+    16                                      mov eax, dword[nr]
+    16          ******************       error: symbol `nr' undefined
+    17                                      mov dword[cnt], 0
+    17          ******************       error: symbol `cnt' undefined
+    18                                      convert_to_ten:
+    19 00000000 BA00000000                      mov edx, 0
+    20 00000005 66BB0A00                        mov bx, 10
+    21 00000009 66F7F3                          div bx              ;ax = quotient  dx = remainder
+    22                                          
+    23 0000000C B900000000                      mov ecx, 0
+    24                                          mov cl, byte[cnt]
+    24          ******************       error: symbol `cnt' undefined
+    25                                          mov [digits + ecx], dl     ;the remainders of the division are the digits of the number in base 10
+    25          ******************       error: symbol `digits' undefined
+    26                                          inc byte[cnt]
+    26          ******************       error: symbol `cnt' undefined
+    27                                          
+    28 00000011 6683F800                        cmp ax, 0           ;while we still have something to divide by 0
+    29 00000015 75E9                        jnz convert_to_ten
+    30                                     
+    31                                      
+    32                                          ;we have 2 situations: either cnt < 3 or cnt >= 3 (means that we have a digit in the hundred place)
+    33                                      
+    34                                          mov al, byte[cnt]
+    34          ******************       error: symbol `cnt' undefined
+    35 00000017 B303                            mov bl, 3
+    36 00000019 38D8                            cmp al, bl
+    37 0000001B 7228                            jb no_hundred_place
+    38 0000001D EB40                            jmp there_is_hundred_place
+    39                                      
+    40                                          
+    41                                          no_hundred_place:
+    42 0000001F BA00000000                          mov edx, 0
+    43                                              mov dl, byte[cnt2]
+    43          ******************       error: symbol `cnt2' undefined
+    44                                              mov byte[s2 + edx], 0
+    44          ******************       error: symbol `s2' undefined
+    45                                              inc byte[cnt2]
+    45          ******************       error: symbol `cnt2' undefined
+    46                                              jmp display_digits
+    46          ******************       error: symbol `display_digits' undefined
+    47                                          
+    48                                          there_is_hundred_place:
+    49 00000024 B900000000                          mov ecx, 0
+    50                                              mov cl, byte[digits + 2]        ;we store the digit in the hundred place
+    50          ******************       error: symbol `digits' undefined
+    51 00000029 BA00000000                          mov edx, 0
+    52                                              mov dl, byte[cnt2]
+    52          ******************       error: symbol `cnt2' undefined
+    53                                              mov [s2 + edx], cl
+    53          ******************       error: symbol `s2' undefined
+    54                                              inc byte[cnt2]
+    54          ******************       error: symbol `cnt2' undefined
+    55                                              jmp display_digits
+    55          ******************       error: symbol `display_digits' undefined
+    56                                              
+    57                                  ;%endif

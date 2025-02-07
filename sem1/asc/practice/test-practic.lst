@@ -1,0 +1,128 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ;Se da un fisier cuvinte.txt care contine cuvinte separate prin spatii.
+     7                                  ;Sa se determine si sa se afiseze pe ecran numarul de cuvinte care au lungimea (numarul de caractere din fiecare cuvant) egala cu o valoare L citita de la tasatura.
+     8                                  
+     9                                  
+    10                                  ; declare external functions needed by our program
+    11                                  extern exit, scanf, printf, fscanf, fprintf, fopen, fclose               ; tell nasm that exit exists even if we won't be defining it
+    12                                  import exit msvcrt.dll
+    13                                  import scanf msvcrt.dll
+    14                                  import printf msvcrt.dll
+    15                                  import fscanf msvcrt.dll
+    16                                  import fprintf msvcrt.dll
+    17                                  import fopen msvcrt.dll
+    18                                  import fclose msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    19                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    20                                  
+    21                                  ; our data is declared here (the variables needed by our program)
+    22                                  segment data use32 class=data
+    23                                      ; ...
+    24                                      
+    25 00000000 637576696E74652E74-         file db "cuvinte.txt", 0
+    25 00000009 787400             
+    26 0000000C 7200                        access_r db "r", 0
+    27 0000000E 256400                      format_rw db "%d", 0
+    28 00000011 256300                      format_r_file db "%c", 0
+    29 00000014 00000000                    descriptor dd 0
+    30 00000018 00000000                    l dd 0
+    31 0000001C 00000000                    cnt dd 0
+    32 00000020 4C203D2000                  message db "L = ", 0
+    33 00000025 637576696E74652063-         message1 db "cuvinte care au lungimea %d: ", 0
+    33 0000002E 617265206175206C75-
+    33 00000037 6E67696D6561202564-
+    33 00000040 3A2000             
+    34 00000043 00<rept>                    chr times 100 db 0
+    35 000000A7 00000000                    cnt_bun dd 0
+    36                                    
+    37                                  
+    38                                  ; our code starts here
+    39                                  segment code use32 class=code
+    40                                      start:
+    41                                          ; ...
+    42                                          ;citim numarul l
+    43 00000000 68[20000000]                    push message
+    44 00000005 FF15[00000000]                  call [printf]
+    45 0000000B 83C404                          add esp, 4
+    46                                          
+    47 0000000E 68[18000000]                    push dword l
+    48 00000013 68[0E000000]                    push dword format_rw
+    49 00000018 FF15[00000000]                  call [scanf]
+    50 0000001E 83C408                          add esp, 4 * 2
+    51                                          
+    52                                          ;deschidem fisierul
+    53 00000021 68[0C000000]                    push dword access_r
+    54 00000026 68[00000000]                    push dword file
+    55 0000002B FF15[00000000]                  call [fopen]
+    56 00000031 83C408                          add esp, 4 * 2
+    57                                          
+    58 00000034 83F800                          cmp eax, 0      ;inseamna ca nu s-a putut deschide fisierul
+    59 00000037 0F8496000000                    je get_out
+    60                                      
+    61 0000003D A3[14000000]                    mov dword[descriptor], eax
+    62                                          
+    63                                          ;acum rezolvam problema
+    64                                               
+    65                                          repeta:
+    66                                              ;fscanf(descriptor, format, variabile)
+    67 00000042 68[43000000]                        push dword chr  ;citim pe rand caracterele din cuvant
+    68 00000047 68[11000000]                        push dword format_r_file
+    69 0000004C FF35[14000000]                      push dword[descriptor]
+    70 00000052 FF15[00000000]                      call [fscanf]
+    71 00000058 83C40C                              add esp, 4 * 3
+    72                                              
+    73 0000005B 83F8FF                              cmp eax, -1 ;inseamna ca nu a mai avut ce sa citeasca => am citit tot din fisier
+    74 0000005E 7434                                je final_repeta
+    75                                              
+    76 00000060 A0[43000000]                        mov al, byte[chr]
+    77 00000065 3C20                                cmp al, ' '     ;am ajuns la un spatiu deci trebuie sa verificam numarul de caractere ale cuvantului
+    78 00000067 7408                                je verifica
+    79                                              
+    80 00000069 FF05[1C000000]                      inc dword[cnt]  ;crestem contorul de caractere dintr-un cuvant
+    81                                              
+    82 0000006F EBD1                                jmp repeta
+    83                                              
+    84                                              verifica:
+    85 00000071 A1[18000000]                            mov eax, dword[l]
+    86 00000076 8B1D[1C000000]                          mov ebx, dword[cnt]
+    87 0000007C 39D8                                    cmp eax, ebx    ;verificam daca nr de caractere ale cuvantului e egal cu l
+    88 0000007E 7402                                    je cuvant_bun
+    89 00000080 EB06                                    jmp final_verifica
+    90                                                  
+    91                                                  cuvant_bun:
+    92 00000082 FF05[A7000000]                              inc dword[cnt_bun]  ;crestem contorul de cuvinte de lungime l
+    93                                                      
+    94                                                  final_verifica:
+    95 00000088 C705[1C000000]0000-                         mov dword[cnt], 0   ;reinitializam contorul pentru urmatorul cuvant
+    95 00000090 0000               
+    96 00000092 EBAE                                        jmp repeta
+    97                                                  
+    98                                                         
+    99                                          final_repeta:
+   100                                              ;printam cate cuvinte au l litere
+   101 00000094 FF35[18000000]                      push dword[l]
+   102 0000009A 68[25000000]                        push dword message1
+   103 0000009F FF15[00000000]                      call [printf]
+   104 000000A5 83C408                              add esp, 4 * 2
+   105                                              
+   106 000000A8 FF35[A7000000]                      push dword [cnt_bun]
+   107 000000AE 68[0E000000]                        push dword format_rw
+   108 000000B3 FF15[00000000]                      call [printf]
+   109 000000B9 83C408                              add esp, 4 * 2
+   110                                          
+   111                                          ;inchidem fisierul
+   112 000000BC FF35[14000000]                  push dword[descriptor]
+   113 000000C2 FF15[00000000]                  call [fclose]
+   114 000000C8 83C404                          add esp, 4
+   115                                          
+   116                                      
+   117                                          ; exit(0)
+   118 000000CB 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   119 000000CD FF15[00000000]                  call    [exit]       ; call exit to terminate the program
+   120                                          
+   121                                          get_out:    ;nu s-a deschis fisierul dam return 1
+   122 000000D3 6A01                                push dword 1
+   123 000000D5 FF15[00000000]                      call [exit] 

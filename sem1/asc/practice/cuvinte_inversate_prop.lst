@@ -1,0 +1,127 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, scanf, printf, perror, gets               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    10                                  import scanf msvcrt.dll
+    11                                  import printf msvcrt.dll
+    12                                  import perror msvcrt.dll  
+    13                                  import gets msvcrt.dll                        
+    14                                  
+    15                                  ;3.	Se citeste o propozitie de la tastatura. Sa se inverseze fiecare cuvant si sa se afiseze pe ecran.                          
+    16                                                            
+    17                                                            
+    18                                  ; our data is declared here (the variables needed by our program)
+    19                                  segment data use32 class=data
+    20                                      ; ...
+    21 00000000 257300                      format_rw db "%s", 0
+    22 00000003 696E74726F64752070-         message db "introdu propozitia:", 10, 0
+    22 0000000C 726F706F7A69746961-
+    22 00000015 3A0A00             
+    23 00000018 01<rept>                    source times 256 db 1 ;string to hold the sentence 
+    24 00000118 01<rept>                    destination times 256 db 1
+    25 00000218 01<rept>                    inv times 256 db 1
+    26 00000318 2000                        space db " ", 0
+    27                                      
+    28                                  
+    29                                  ; our code starts here
+    30                                  segment code use32 class=code
+    31                                      start:
+    32                                          ; ...
+    33                                      
+    34 00000000 68[03000000]                    push dword message
+    35 00000005 FF15[00000000]                  call [printf]
+    36 0000000B 83C404                          add esp, 4
+    37                                          
+    38                                          ;read the sentence
+    39 0000000E 68[18000000]                    push dword source
+    40 00000013 FF15[00000000]                  call [gets]
+    41 00000019 83C404                          add esp, 4
+    42                                          
+    43 0000001C BE[18000000]                    mov esi, source
+    44 00000021 BF[18010000]                    mov edi, destination
+    45                                          
+    46                                          repeta:
+    47 00000026 803E00                              cmp byte[esi], 0 ;check if we reached the end
+    48 00000029 7454                                je final
+    49                                              
+    50 0000002B 803E20                              cmp byte[esi], ' '; check if we reached a space between words
+    51 0000002E 7405                                je inverseaza
+    52 00000030 7500                                jne keep_letter
+    53                                              
+    54                                              keep_letter:
+    55 00000032 A4                                      movsb   ;store in edi the character
+    56 00000033 EBF1                                    jmp repeta
+    57                                                  
+    58                                              inverseaza:
+    59 00000035 83EF01                                  sub edi, 1 ;it was increased when we added the last letter
+    60 00000038 B8[18020000]                            mov eax, inv    ;we store the offset of the inv word in eax
+    61                                                  
+    62                                                  repeta1:
+    63 0000003D 81FF[17010000]                              cmp edi, destination - 1; we check if the offset of edi got before the start address of destination -> it means that all the letters were stored
+    64 00000043 740C                                        je end_repeta1
+    65                                                      
+    66 00000045 8A1F                                        mov bl, byte[edi]
+    67 00000047 8818                                        mov byte[eax], bl
+    68 00000049 83EF01                                      sub edi, 1  ;we go to the next letter
+    69 0000004C 83C001                                      add eax, 1  ;store on the next position in eax
+    70 0000004F EBEC                                        jmp repeta1
+    71                                                      
+    72                                                  end_repeta1:
+    73 00000051 C60000                                      mov byte[eax], 0 ;reset
+    74                                                      
+    75                                                  ;print the inverse word
+    76 00000054 68[18020000]                            push dword inv
+    77 00000059 68[00000000]                            push dword format_rw
+    78 0000005E FF15[00000000]                          call [printf]
+    79 00000064 83C408                                  add esp, 4 * 2
+    80                                                  
+    81 00000067 68[18030000]                            push dword space
+    82 0000006C FF15[00000000]                          call [printf]
+    83 00000072 83C404                                  add esp, 4
+    84                                                  
+    85 00000075 BF[18010000]                            mov edi, destination ;we start again from the beggining of the destination offset not to have the current word
+    86 0000007A 83C601                                  add esi, 1
+    87 0000007D EBA7                                    jmp repeta
+    88                                                  
+    89                                          final:
+    90                                              ;the last word from the sentence remained to be switched
+    91 0000007F 83EF01                              sub edi, 1
+    92 00000082 B8[18020000]                        mov eax, inv
+    93                                              
+    94                                              repeta2:
+    95 00000087 81FF[17010000]                          cmp edi, destination - 1
+    96 0000008D 740C                                    je end_repeta2
+    97                                                  
+    98 0000008F 8A1F                                    mov bl, byte[edi]
+    99 00000091 8818                                    mov byte[eax], bl
+   100 00000093 83EF01                                  sub edi, 1
+   101 00000096 83C001                                  add eax, 1
+   102 00000099 EBEC                                    jmp repeta2
+   103                                                  
+   104                                              end_repeta2:
+   105 0000009B C60000                                  mov byte[eax], 0
+   106                                                  
+   107                                              ;print the last word
+   108 0000009E 68[18020000]                        push dword inv
+   109 000000A3 68[00000000]                        push dword format_rw
+   110 000000A8 FF15[00000000]                      call [printf]
+   111 000000AE 83C408                              add esp, 4 * 2
+   112                                                  
+   113                                  
+   114                                              
+   115                                          ;print the sentence
+   116                                          ;push dword source
+   117                                          ;push dword format_rw
+   118                                          ;call [printf]
+   119                                          ;add esp, 4 * 2
+   120                                          
+   121                                          ;call [perror]
+   122                                      
+   123                                          ; exit(0)
+   124 000000B1 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   125 000000B3 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

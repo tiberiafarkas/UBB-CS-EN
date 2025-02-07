@@ -1,0 +1,3 @@
+C:/Users/user/Desktop/facultate/algebra/project-algebra/cmake-build-debug/CMakeFiles/project_algebra.dir
+C:/Users/user/Desktop/facultate/algebra/project-algebra/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/user/Desktop/facultate/algebra/project-algebra/cmake-build-debug/CMakeFiles/rebuild_cache.dir

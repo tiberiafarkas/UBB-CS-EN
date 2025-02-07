@@ -1,0 +1,182 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, fprintf, fopen, fclose, printf, gets               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll
+     9                                  import fprintf msvcrt.dll
+    10                                  import fopen msvcrt.dll
+    11                                  import fclose msvcrt.dll
+    12                                  import printf msvcrt.dll
+    13                                  import gets msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    14                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    15                                  
+    16                                  ;8.	Citesc string tastatura, creem fisier string.txt, adaugam in fisier prima data majusculele apoi minusculele invers de cum apar in sir.
+    17                                  
+    18                                                            
+    19                                  ; our data is declared here (the variables needed by our program)
+    20                                  segment data use32 class=data
+    21                                      ; ...
+    22                                      
+    23 00000000 00<rept>                    source times 100 db 0
+    24 00000064 00                          db 0
+    25 00000065 00<rept>                    small_letters times 100 db 0
+    26 000000C9 00                          db 0
+    27 000000CA 00                          cnt_small db 0
+    28 000000CB 00<rept>                    capital_letters times 100 db 0
+    29 0000012F 00                          db 0
+    30 00000130 00                          cnt_capital db 0
+    31 00000131 25730A00                    format_w db "%s", 10, 0
+    32 00000135 7700                        access_mode db "w", 0
+    33 00000137 737472696E672E7478-         file db "string.txt", 0
+    33 00000140 7400               
+    34 00000142 00000000                    file_ptr dd 0
+    35 00000146 696E74726F64752073-         message db "introdu string:", 10, 0
+    35 0000014F 7472696E673A0A00   
+    36 00000157 00000000                    cpy dd 0
+    37                                  
+    38                                  ; our code starts here
+    39                                  segment code use32 class=code
+    40                                      start:
+    41                                          ; ...
+    42                                          
+    43 00000000 68[46010000]                    push dword message
+    44 00000005 FF15[00000000]                  call [printf]
+    45 0000000B 83C404                          add esp, 4
+    46                                          
+    47                                          ;read the string
+    48 0000000E 68[00000000]                    push dword source
+    49 00000013 FF15[00000000]                  call [gets]
+    50 00000019 83C404                          add esp, 4
+    51                                          
+    52                                          ;open the output file
+    53 0000001C 68[35010000]                    push dword access_mode
+    54 00000021 68[37010000]                    push dword file
+    55 00000026 FF15[00000000]                  call [fopen]
+    56 0000002C 83C408                          add esp, 4 * 2
+    57                                          
+    58 0000002F A3[42010000]                    mov dword[file_ptr], eax   
+    59                                          
+    60 00000034 BE[00000000]                    mov esi, source
+    61 00000039 BF[C8000000]                    mov edi, small_letters + 100 - 1 ;we start from the end to the beggining
+    62 0000003E BB[CB000000]                    mov ebx, capital_letters
+    63                                          
+    64                                          repeat:
+    65 00000043 803E00                              cmp byte[esi], 0 ;it means we reached the end of the string
+    66 00000046 742D                                je final
+    67                                              
+    68 00000048 803E61                              cmp byte[esi], 'a'
+    69 0000004B 7207                                jb check_majuscule
+    70                                              ;check if there are other characters after z
+    71 0000004D 803E7A                              cmp byte[esi], 'z'
+    72 00000050 771E                                ja next
+    73                                              
+    74 00000052 EB13                                jmp minuscule ;we pass the check
+    75                                             
+    76                                              check_majuscule:
+    77 00000054 803E41                                  cmp byte[esi], 'A'
+    78 00000057 7217                                    jb next     ;it means we have other characters but not letters
+    79                                                  
+    80 00000059 803E5A                                  cmp byte[esi], 'Z'
+    81 0000005C 7712                                    ja next
+    82                                            
+    83                                              ;if we got here it means we have letters
+    84                                              majuscule:
+    85 0000005E 8A06                                    mov al, byte[esi]
+    86 00000060 8803                                    mov byte[ebx], al   ;store the capital letter
+    87 00000062 83C301                                  add ebx, 1
+    88 00000065 EB09                                    jmp next
+    89                                                  ;inc byte[cnt_capital]
+    90                                                  
+    91                                              minuscule:
+    92                                                  ;we keep the small letters in a string and we iterate through it at the end starting from right to left
+    93                                                  ;load in edi the letters
+    94 00000067 8A06                                    mov al, byte[esi]
+    95 00000069 8807                                    mov byte[edi], al
+    96 0000006B 83EF01                                  sub edi, 1
+    97 0000006E EB00                                    jmp next
+    98                                                  ;inc byte[cnt_small]
+    99                                                  
+   100                                              next:
+   101 00000070 83C601                                  add esi, 1
+   102 00000073 EBCE                                    jmp repeat
+   103                                                  
+   104                                          final:
+   105                                          
+   106 00000075 68[CB000000]                        push dword capital_letters
+   107 0000007A 68[31010000]                        push dword format_w
+   108 0000007F FF35[42010000]                      push dword [file_ptr]
+   109 00000085 FF15[00000000]                      call [fprintf]
+   110 0000008B 83C408                              add esp, 4 * 2
+   111                                  
+   112                                              ; printf(newline)
+   113                                              ;push dword newline
+   114                                              ;call [printf]
+   115                                              ;add esp, 4
+   116                                  
+   117                                              ; vom scrie sirul de minuscule, trb sa ajungem pana la primul caracter diferit de 0, care prin coincidenta e edi + 1
+   118 0000008E 8D5F01                              lea ebx, [edi + 1]
+   119                                  
+   120                                              ; printf(ebx)
+   121 00000091 53                                  push dword ebx
+   122 00000092 68[31010000]                        push dword format_w
+   123 00000097 FF35[42010000]                      push dword[file_ptr]
+   124 0000009D FF15[00000000]                      call [fprintf]
+   125 000000A3 83C408                              add esp, 4 * 2
+   126                                          
+   127                                              ;std  ;we set the direction flag to print the small letters from left to right
+   128                                              ;mov ecx, 0
+   129                                              ;mov ebx, capital_letters
+   130                                              ;repeat1:
+   131                                              ;    cmp cl, byte[cnt_capital] ;we pass through all the letters
+   132                                              ;    je repeat2
+   133                                              ;    
+   134                                              ;    mov eax, 0
+   135                                              ;    mov al, byte[ebx+ecx]
+   136                                              ;    
+   137                                              ;    mov dword[cpy], ecx  ;keep in mind the value of ecx
+   138                                              ;    
+   139                                              ;    push dword eax
+   140                                              ;    push dword format_w
+   141                                              ;    push dword [file_ptr]
+   142                                              ;    call [fprintf]
+   143                                              ;    add esp, 4 * 3
+   144                                              ;    
+   145                                              ;    mov ecx, dword[cpy]
+   146                                              ;    inc ecx
+   147                                              ;    jmp repeat1
+   148                                                  
+   149                                              ;mov ecx, 0
+   150                                              ;mov cl, byte[cnt_small]
+   151                                              ;mov edi, small_letters
+   152                                              ;repeat2:
+   153                                              ;    cmp ecx, 0  ;it means we pass through all our letters
+   154                                              ;    je get_out
+   155                                              ;    
+   156                                              ;    mov eax, 0
+   157                                              ;    mov al, byte[edi+ecx-1]
+   158                                              ;    
+   159                                              ;    mov dword[cpy], ecx
+   160                                              ;    
+   161                                              ;    push dword eax
+   162                                              ;    push dword format_w
+   163                                              ;    ;push dword [file_ptr]
+   164                                              ;    call [printf]
+   165                                              ;    add esp, 4 * 2
+   166                                              ;    
+   167                                              ;    mov ecx, dword[cpy]
+   168                                              ;    dec ecx
+   169                                              ;    jmp repeat2
+   170                                                 
+   171                                          
+   172                                          get_out:
+   173                                              ;we need to close the file
+   174 000000A6 FF35[42010000]                      push dword [file_ptr]
+   175 000000AC FF15[00000000]                      call [fclose]
+   176 000000B2 83C404                              add esp, 4
+   177                                              
+   178                                          ; exit(0)
+   179 000000B5 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   180 000000B7 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

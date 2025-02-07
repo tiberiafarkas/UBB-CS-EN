@@ -1,0 +1,54 @@
+     1                                  %ifndef _BASE8_ASM_ ; continue if _BASE8_ASM_ is undefined
+     2                                  %define _BASE8_ASM_ ; make sure that it is defined
+     3                                                          ; otherwise, %include allows only one inclusionbits 32 ; assembling for the 32 bits architecture
+     4                                  
+     5                                                          
+     6                                  base8:
+     7                                  
+     8 00000000 66678B442404                mov eax, [esp + 4]
+     9                                      mov byte[cnt], 0
+     9          ******************       error: symbol `cnt' undefined
+    10                                      
+    11                                      transform:
+    12 00000006 66BA00000000                    mov edx, 0
+    13 0000000C BB0800                          mov bx, 8
+    14 0000000F F7F3                            div bx  ;ax= quotient   dx = remainder
+    15                                          
+    16 00000011 80C230                          add dl, '0'
+    17                                          
+    18 00000014 66B900000000                    mov ecx, 0  ;add the remainder(which is the digit of the nr in base 8 in number)
+    19                                          mov cl, byte[cnt]
+    19          ******************       error: symbol `cnt' undefined
+    20                                          mov [number + ecx], dl
+    20          ******************       error: symbol `number' undefined
+    21                                          inc byte[cnt]
+    21          ******************       error: symbol `cnt' undefined
+    22                                          
+    23 0000001A 83F800                          cmp ax, 0
+    24 0000001D 75E7                            jnz transform
+    25                                          
+    26                                      mov ebx, cnt
+    26          ******************       error: symbol `cnt' undefined
+    27 0000001F 664B                        dec ebx
+    28                                  
+    29                                      reverse:
+    30                                          dec byte[cnt]
+    30          ******************       error: symbol `cnt' undefined
+    31 00000021 66BA00000000                    mov edx, 0
+    32                                          mov dl, byte [cnt] ;get digit
+    32          ******************       error: symbol `cnt' undefined
+    33 00000027 66B900000000                    mov ecx, 0
+    34                                          mov cl, byte[number + edx]
+    34          ******************       error: symbol `number' undefined
+    35 0000002D 80C130                          add cl, '0'           ; convert to ascii
+    36                                          mov byte [digit], cl  ; store in digit buffer
+    36          ******************       error: symbol `digit' undefined
+    37                                  
+    38                                  
+    39                                      ; Return result
+    40                                          
+    41                                      lea eax, [number]
+    41          ******************       error: symbol `number' undefined
+    42 00000030 C3                          ret 
+    43                                          
+    44                                  %endif

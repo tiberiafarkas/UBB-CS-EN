@@ -1,0 +1,133 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, printf, perror               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+     9                                  import printf msvcrt.dll
+    10                                  import perror msvcrt.dll
+    11                                  
+    12                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    13                                  
+    14                                  %include "base8.asm"                          
+     1                              <1> %ifndef _BASE8_ASM_ ; continue if _BASE8_ASM_ is undefined
+     2                              <1> %define _BASE8_ASM_ ; make sure that it is defined
+     3                              <1>                         ; otherwise, %include allows only one inclusionbits 32 ; assembling for the 32 bits architecture
+     4                              <1> 
+     5                              <1> 
+     6                              <1> convert_base8:
+     7                              <1>     ; void convert_base8(char* buffer, int num)
+     8                              <1>     ; ---------------------------------------------
+     9                              <1> 
+    10 00000000 8B7C2404            <1>     mov edi, [esp + 4] ; buffer
+    11 00000004 8B442408            <1>     mov eax, [esp + 8] ; num
+    12                              <1> 
+    13                              <1>     ; while(num != 0)
+    14 00000008 FC                  <1>     cld
+    15                              <1>     while_gz:
+    16 00000009 BA00000000          <1>         mov edx, 0
+    17 0000000E BB08000000          <1>         mov ebx, 8
+    18 00000013 F7F3                <1>         div ebx
+    19                              <1> 
+    20 00000015 88D3                <1>         mov bl, dl
+    21 00000017 80C330              <1>         add bl, '0'
+    22 0000001A 881F                <1>         mov byte [edi], bl
+    23 0000001C 47                  <1>         inc edi
+    24                              <1> 
+    25 0000001D 83F800              <1>         cmp eax, 0
+    26 00000020 75E7                <1>         jnz while_gz
+    27                              <1> 
+    28 00000022 8B742404            <1>     mov esi, [esp + 4] ; buffer
+    29                              <1> 
+    30                              <1>     ; remember the current edi address
+    31 00000026 89FB                <1>     mov ebx, edi
+    32 00000028 4F                  <1>     dec edi
+    33                              <1>     ; while esi < edi
+    34                              <1>     reverse:
+    35 00000029 39FE                <1>         cmp esi, edi
+    36 0000002B 730C                <1>         jae end_reverse
+    37                              <1> 
+    38 0000002D 8A07                <1>         mov al, byte [edi]
+    39 0000002F 8A16                <1>         mov dl, byte [esi]
+    40 00000031 8806                <1>         mov byte [esi], al
+    41 00000033 8817                <1>         mov byte [edi], dl
+    42                              <1> 
+    43 00000035 46                  <1>         inc esi
+    44 00000036 4F                  <1>         dec edi
+    45 00000037 EBF0                <1>         jmp reverse
+    46                              <1> 
+    47                              <1> 
+    48                              <1>     end_reverse:
+    49                              <1>         ; append a 0
+    50 00000039 C60300              <1>         mov byte [ebx], 0
+    51 0000003C C3                  <1>         ret
+    52                              <1> 
+    53                              <1>         
+    54                              <1> %endif
+    15                                                            
+    16                                  ; our data is declared here (the variables needed by our program)
+    17                                  segment data use32 class=data
+    18                                      ; ...
+    19                                      
+    20                                      ;Show for each number from 32 to 126 the value of the number (in base 8) and the character with that ASCII code.
+    21                                  
+    22 0000003D 4572726F7220666F75-         errors db "Error found", 0
+    22 00000046 6E6400             
+    23 00000049 <res 00000004>              number resd 1
+    24 0000004D <res 00000001>              cnt resb 1
+    25 0000004E <res 00000004>              numbers resd 1
+    26 00000052 61736369695F636F64-         format db "ascii_code = %c", 10, 13, 0
+    26 0000005B 65203D2025630A0D00 
+    27                                  
+    28 00000064 6261736538203D2025-         string_format db "base8 = %s", 10, 13, 0
+    28 0000006D 730A0D00           
+    29 00000071 <res 000000FF>              base8_buffer resb 255
+    30                                  
+    31                                  ; our code starts here
+    32                                  segment code use32 class=code
+    33                                      start:
+    34                                          ; ...
+    35                                          ; for (ecx = 32; ecx <= 126; ecx++)
+    36 00000000 B920000000                      mov ecx, 32
+    37                                          for_loop:
+    38 00000005 83F97E                              cmp ecx, 126
+    39 00000008 7737                                ja end_for
+    40                                  
+    41                                              ; print the ascii code
+    42 0000000A 51                                  push ecx
+    43 0000000B 68[52000000]                        push dword format
+    44 00000010 FF15[00000000]                      call [printf]
+    45 00000016 83C404                              add esp, 4
+    46 00000019 59                                  pop ecx
+    47                                  
+    48                                              ; get the base8 representation
+    49                                              ; convert_base8(char* buffer, int num)
+    50 0000001A 51                                  push ecx
+    51 0000001B 68[71000000]                        push dword base8_buffer
+    52 00000020 E8(00000000)                        call convert_base8
+    53 00000025 83C404                              add esp, 4
+    54 00000028 59                                  pop ecx
+    55                                  
+    56                                              ; printf(string_format, base8_buffer)
+    57 00000029 51                                  push ecx
+    58 0000002A 68[71000000]                        push dword base8_buffer
+    59 0000002F 68[64000000]                        push dword string_format
+    60 00000034 FF15[00000000]                      call [printf]
+    61 0000003A 83C408                              add esp, 4 * 2
+    62                                  
+    63 0000003D 59                                  pop ecx
+    64                                  
+    65 0000003E 41                                  inc ecx
+    66 0000003F EBC4                                jmp for_loop
+    67                                      
+    68                                          end_for:
+    69                                          
+    70                                      
+    71                                          ; exit(0)
+    72 00000041 68[3D000000]                    push dword errors ;it will show us if we have any errors
+    73 00000046 FF15[00000000]                  call [perror]
+    74 0000004C 83C404                          add esp, 4
+    75 0000004F 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+    76 00000051 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

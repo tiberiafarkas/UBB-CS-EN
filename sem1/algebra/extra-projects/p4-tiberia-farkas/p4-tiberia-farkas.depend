@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1732224134 source:c:\users\user\desktop\facultate\algebra\p4-tiberia-farkas\main.cpp
+	<fstream>
+	<vector>
+	<deque>
+	<iostream>
+

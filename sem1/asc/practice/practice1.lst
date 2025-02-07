@@ -1,0 +1,111 @@
+     1                                  bits 32                ; Assemble for a 32-bit architecture
+     2                                  
+     3                                  global start
+     4                                  
+     5                                  extern exit, fopen, fclose, fscanf, printf, perror
+     6                                  import exit msvcrt.dll
+     7                                  import fopen msvcrt.dll
+     8                                  import fclose msvcrt.dll
+     9                                  import fscanf msvcrt.dll
+    10                                  import printf msvcrt.dll
+    11                                  import perror msvcrt.dll
+    12                                  
+    13                                  section .data
+    14 00000000 696E7075742E747874-         file_name db "input.txt", 0       ; Input file name
+    14 00000009 00                 
+    15 0000000A 7200                        read_mode db "r", 0               ; Read mode for fopen
+    16 0000000C 257800                      format_in db "%x", 0              ; Format string for reading integers
+    17 0000000F 4D696E696D20646967-         format_out db "Minim digit of the number: %d", 10, 0 ; Format string for printing integers (with newline)
+    17 00000018 6974206F6620746865-
+    17 00000021 206E756D6265723A20-
+    17 0000002A 25640A00           
+    18 0000002E 4572726F723A2000            error_msg db "Error: ", 0         ; Error message prefix
+    19 00000036 <res 00000004>              file_ptr resd 1                   ; File pointer (for fopen)
+    20 0000003A <res 00000004>              number resd 1                     ; Buffer to store each number
+    21 0000003E <res 00000004>              min_dig resd 1
+    22 00000042 00000000                    cpy dd 0
+    23                                  
+    24                                  section .code
+    25                                      start:
+    26                                          ; Open the file
+    27 00000000 68[0A000000]                    push dword read_mode              ; Push mode string
+    28 00000005 68[00000000]                    push dword file_name              ; Push file name
+    29 0000000A FF15[00000000]                  call [fopen]                        ; Call fopen
+    30 00000010 83C408                          add esp, 4 * 2                       ; Clean up the stack
+    31                                          
+    32 00000013 85C0                            test eax, eax                     ; Check if fopen returned NULL (error)
+    33 00000015 0F848A000000                    jz case_error                     ; Jump if the file couldn't be opened
+    34                                          
+    35 0000001B A3[36000000]                    mov [file_ptr], eax               ; Store the file pointer
+    36                                  
+    37                                          ; Loop to read and print 10 numbers
+    38 00000020 B90A000000                      mov ecx, 10                       ; Loop counter (read 10 numbers)
+    39                                          read_loop:
+    40 00000025 890D[42000000]                      mov dword[cpy], ecx
+    41                                  
+    42 0000002B 68[3A000000]                        push dword number                 ; Push address of buffer for fscanf
+    43 00000030 68[0C000000]                        push dword format_in              ; Push format string for fscanf
+    44 00000035 FF35[36000000]                      push dword [file_ptr]                          ; Push file pointer for fscanf
+    45 0000003B FF15[00000000]                      call [fscanf]                       ; Call fscanf
+    46 00000041 83C40C                              add esp, 4*3                      ; Clean up the stack
+    47                                              
+    48 00000044 83F801                              cmp eax, 1                        ; Check if fscanf successfully read a number
+    49 00000047 755C                                jne case_error                    ; Jump if fscanf failed
+    50                                  
+    51 00000049 C705[3E000000]0A00-                 mov dword[min_dig], 10   ;prepare the min digit
+    51 00000051 0000               
+    52                                  
+    53 00000053 A1[3A000000]                        mov eax, dword [number] ;deimpartitul
+    54                                              find_min_digit:
+    55 00000058 66BB0A00                                mov bx, 10  ;impartitorul
+    56                                                  
+    57                                                  ;ax/dx is used for division, ax = quotient, dx = remainder
+    58                                                  
+    59 0000005C BA00000000                              mov edx, 0
+    60 00000061 66F7F3                                  div bx
+    61                                                  
+    62 00000064 8B0D[3E000000]                          mov ecx, dword[min_dig]  ;compare the actual base 10 digit with the min_digit
+    63 0000006A 39D1                                    cmp ecx, edx
+    64 0000006C 7702                                    ja update_min   ;if it is smaller update it
+    65 0000006E EB06                                    jmp loop_condition
+    66                                                 
+    67                                                  update_min:
+    68 00000070 8915[3E000000]                              mov dword[min_dig], edx
+    69                                                  
+    70                                                  loop_condition:
+    71 00000076 6683F800                                    cmp ax, 0
+    72 0000007A 75DC                                        jne find_min_digit
+    73                                                      
+    74                                                      
+    75                                              ; Print the number to the console
+    76 0000007C FF35[3E000000]                      push dword [min_dig]               ; Push the number to print
+    77 00000082 68[0F000000]                        push dword format_out             ; Push the format string for printf
+    78 00000087 FF15[00000000]                      call [printf]                       ; Call printf
+    79 0000008D 83C408                              add esp, 4*2                        ; Clean up the stack
+    80                                                  
+    81 00000090 8B0D[42000000]                      mov ecx, dword[cpy]
+    82                                                  
+    83 00000096 49                                  dec ecx                           ; Decrement loop counter
+    84 00000097 758C                                jnz read_loop                     ; Continue loop if counter != 0
+    85                                  
+    86                                          ; Close the file
+    87 00000099 50                              push eax                          ; Push file pointer for fclose
+    88 0000009A FF15[00000000]                  call [fclose]                       ; Call fclose
+    89 000000A0 83C404                          add esp, 4                        ; Clean up the stack
+    90 000000A3 EB10                            jmp program_end                   ; Exit the program
+    91                                  
+    92                                          case_error:
+    93                                              ; Print error message if fscanf failed
+    94 000000A5 68[2E000000]                        push dword error_msg              ; Push the error message
+    95 000000AA FF15[00000000]                      call [perror]                       ; Call perror
+    96 000000B0 83C404                              add esp, 4                        ; Clean up the stack
+    97 000000B3 EB07                                jmp exit_program                  ; Exit the program
+    98                                  
+    99                                          program_end:
+   100                                              ; Exit the program
+   101 000000B5 6A00                                push dword 0                      ; Push exit code (0 = success)
+   102 000000B7 E8(00000000)                        call exit                         ; Call exit
+   103                                  
+   104                                          exit_program:
+   105 000000BC 6A01                                push dword 1                      ; Push exit code (1 = error)
+   106 000000BE E8(00000000)                        call exit                         ; Call exit

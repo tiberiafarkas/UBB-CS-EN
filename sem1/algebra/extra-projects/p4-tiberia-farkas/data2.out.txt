@@ -1,0 +1,2 @@
+The number of 3-dimensional subspaces of the vector space Z^2_2 over Z_2 is 0
+A basis for each subspace is:

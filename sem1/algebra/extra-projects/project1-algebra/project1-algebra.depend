@@ -1,0 +1,8 @@
+# depslib dependency file v1.0
+1729270117 source:c:\users\user\desktop\facultate\algebra\project1-algebra\main.cpp
+	<iostream>
+	<fstream>
+	<string>
+	<vector>
+	<set>
+

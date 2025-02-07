@@ -1,0 +1,189 @@
+     1                                  bits 32 ; assembling for the 32 bits architecture
+     2                                  
+     3                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     4                                  global start        
+     5                                  
+     6                                  ; declare external functions needed by our program
+     7                                  extern exit, printf, fopen, fclose, fprintf               ; tell nasm that exit exists even if we won't be defining it
+     8                                  import exit msvcrt.dll
+     9                                  import printf msvcrt.dll
+    10                                  import fopen msvcrt.dll
+    11                                  import fprintf msvcrt.dll
+    12                                  import fclose msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    13                                                            ; msvcrt.dll contains exit, printf and all the other important C-runtime specific functions
+    14                                  
+    15                                  ; our data is declared here (the variables needed by our program)
+    16                                  segment data use32 class=data
+    17                                      ; ...
+    18                                  
+    19                                  ;7.	Se da un sir de qword definit in data segment. elementele sirului sunt in baza 16
+    20                                  ;a)	sa se printeze bytes care compun qword urile din sir
+    21                                  ;b) sa se identifice words care au ultima cifra egala cu constanta k definita in segmentul de date. sa se salveze aceste words in sirul d
+    22                                  ;c)	sa se identifice dwords care sunt cuprinse in intervalul AAA - FFFF. sa se determine numarul dwords din acest interval. sa se afiseze acest numar in baza 10 in fisierul 'iesire.txt'
+    23                                  
+    24 00000000 021101917856341288-         sir dq 12_34_56_78_91_01_11_02h, 10_22_33_44_55_66_77_88h, 10_12_12_33_44_55_12_10h, 0h
+    24 00000009 776655443322101012-
+    24 00000012 554433121210000000-
+    24 0000001B 0000000000         
+    25 00000020 6965736972652E7478-         file db "iesire.txt", 0
+    25 00000029 7400               
+    26 0000002B 257800                      format_h db "%x", 0
+    27 0000002E 00000000                    descriptor dd 0
+    28 00000032 0000<rept>                  d times 100 dw 0
+    29 000000FA 2000                        space db " ", 0
+    30 000000FC 00000000                    cnt dd 0
+    31 00000100 00000000                    i dd 0
+    32 00000104 0A                          newline db 10
+    33 00000105 02                          k db 2h
+    34 00000106 <res 00000002>              copy_word resw 1
+    35 00000108 00000000                    cnt1 dd 0
+    36                                      
+    37                                      
+    38                                  ; our code starts here
+    39                                  segment code use32 class=code
+    40                                      start:
+    41                                          ; ...
+    42                                          
+    43                                          repeat_a:
+    44 00000000 8B0D[00010000]                      mov ecx, dword[i]   ;iteram printe qwordurile din sir
+    45 00000006 8B048D[00000000]                    mov eax, dword[sir + ecx * 4] ;mutam partea low dword in eax
+    46                                              ;mov edx, dword[sir + ecx + 4] ;mutam partea high dword in edx
+    47                                              
+    48 0000000D 83F800                              cmp eax, 0  ;verificam daca am ajuns la ultima valoarea din sir -> stop
+    49 00000010 7402                                je  check_0
+    50 00000012 EB0C                                jmp continue
+    51                                              
+    52                                              check_0:
+    53 00000014 8B148D[04000000]                        mov edx, dword[sir + ecx * 4 + 4]   ;mutam partea high 
+    54 0000001B 83FA00                                  cmp edx, 0
+    55 0000001E 743C                                    je final
+    56                                              
+    57                                              continue:
+    58                                                  ;stosd   ;[edi] = eax
+    59 00000020 B904000000                              mov ecx, 4
+    60                                                  ;while (ecx > 0)
+    61                                                  print_low:
+    62 00000025 BB00000000                                  mov ebx, 0
+    63 0000002A 88C3                                        mov bl, al  ;tinem in bl pe rand bytes
+    64                                                      
+    65 0000002C 60                                          pusha   ;save the value from register -> in this case we are inerested in ecx
+    66                                                      
+    67 0000002D 53                                          push ebx        ;print the byte
+    68 0000002E 68[2B000000]                                push dword format_h
+    69 00000033 FF15[00000000]                              call [printf] 
+    70 00000039 83C408                                      add esp, 4 * 2
+    71                                                      
+    72 0000003C 68[FA000000]                                push dword space
+    73 00000041 FF15[00000000]                              call [printf]
+    74 00000047 83C404                                      add esp, 4 
+    75                                                      
+    76 0000004A 61                                          popa    
+    77                                                      
+    78 0000004B C1E808                                      shr eax, 8  ;putem elimina byteul ca l-am afisat deja
+    79                                                      
+    80 0000004E 49                                          dec ecx
+    81 0000004F 83F900                                      cmp ecx, 0
+    82 00000052 75D1                                        jne print_low
+    83                                                 
+    84 00000054 FF05[00010000]                          inc dword[i]
+    85 0000005A EBA4                                    jmp repeat_a
+    86                                                  
+    87                                          final:
+    88 0000005C 68[04010000]                    push dword newline
+    89 00000061 FF15[00000000]                  call [printf]
+    90 00000067 83C404                          add esp, 4
+    91                                          
+    92 0000006A C705[00010000]0000-             mov dword[i], 0
+    92 00000072 0000               
+    93 00000074 BF[32000000]                    mov edi, d
+    94                                          repeat_b:
+    95                                              ;22%10 = 2 => ultima cifra din numar e 2
+    96                                              ;daca am ax = 22, bl = 10 => ah = 2 - remainder al = 2 - quotient
+    97 00000079 8B0D[00010000]                      mov ecx, dword[i]
+    98 0000007F B800000000                          mov eax, 0
+    99 00000084 668B8409[00000000]                  mov ax, word[sir + ecx * 2]
+   100 0000008C 83F800                              cmp eax, 0
+   101 0000008F 7402                                je check_end
+   102 00000091 EB1E                                jmp continue1
+   103                                             
+   104                                              
+   105                                              check_end:
+   106 00000093 B800000000                              mov eax, 0
+   107 00000098 668B8409[04000000]                      mov ax, word[sir + ecx * 2 + 4]
+   108 000000A0 83F800                                  cmp eax, 0
+   109 000000A3 7400                                    je dublu_check
+   110                                                  
+   111                                                  dublu_check:
+   112 000000A5 8B048D[04000000]                            mov eax, dword[sir + ecx * 4 + 4]
+   113 000000AC 83F800                                      cmp eax, 0
+   114 000000AF 7460                                        je final_2
+   115                                              
+   116                                              continue1:
+   117 000000B1 66A3[06010000]                          mov word[copy_word], ax  ;we need to keep in mind the word
+   118                                                  
+   119 000000B7 88C3                                    mov bl, al
+   120 000000B9 B800000000                              mov eax, 0
+   121 000000BE 88D8                                    mov al, bl ;we are interested only in the last byte so scapam de restul
+   122                                                  
+   123 000000C0 B310                                    mov bl, 16
+   124 000000C2 F6F3                                    div bl
+   125                                                  
+   126 000000C4 8A15[05010000]                          mov dl, byte[k]
+   127 000000CA 38D4                                    cmp ah, dl
+   128 000000CC 7402                                    je add_in_d
+   129 000000CE EB36                                    jmp continue2
+   130                                                  
+   131                                                  add_in_d:
+   132 000000D0 B800000000                                  mov eax, 0
+   133 000000D5 66A1[06010000]                              mov ax, word[copy_word]
+   134 000000DB 668907                                      mov [edi], ax    ;we keep in d the word
+   135 000000DE 83C702                                      add edi, 2
+   136 000000E1 FF05[08010000]                              inc dword[cnt1]
+   137                                                      
+   138 000000E7 60                                          pusha 
+   139 000000E8 57                                          push dword edi
+   140 000000E9 68[2B000000]                                push dword format_h
+   141 000000EE FF15[00000000]                              call [printf]
+   142 000000F4 83C408                                      add esp, 4 * 2
+   143                                                      
+   144 000000F7 68[04010000]                                push newline
+   145 000000FC FF15[00000000]                              call [printf]
+   146 00000102 83C404                                      add esp, 4
+   147 00000105 61                                          popa
+   148                                                   
+   149                                                  continue2:
+   150 00000106 FF05[00010000]                              inc dword[i]
+   151 0000010C E968FFFFFF                                  jmp repeat_b
+   152                                                  
+   153                                          final_2:
+   154 00000111 BE[32000000]                        mov esi, d
+   155 00000116 8B0D[08010000]                      mov ecx, dword[cnt1]
+   156 0000011C E326                                jecxz final_print
+   157                                              
+   158                                              print_words:
+   159 0000011E 60                                      pusha
+   160 0000011F 66AD                                    lodsw
+   161                                                  
+   162 00000121 50                                      push eax
+   163 00000122 68[2B000000]                            push dword format_h
+   164 00000127 FF15[00000000]                          call [printf]
+   165 0000012D 83C408                                  add esp, 4 * 2
+   166                                                  
+   167 00000130 68[FA000000]                            push space
+   168 00000135 FF15[00000000]                          call [printf]
+   169 0000013B 83C404                                  add esp, 4
+   170                                                  
+   171 0000013E 61                                      popa
+   172                                                  
+   173 0000013F 83C602                                  add esi, 2
+   174                                                  
+   175 00000142 E2DA                                    loop print_words
+   176                                                  
+   177                                              final_print:
+   178                                                  
+   179                                              
+   180                                          
+   181                                      
+   182                                          ; exit(0)
+   183 00000144 6A00                            push    dword 0      ; push the parameter for exit onto the stack
+   184 00000146 FF15[00000000]                  call    [exit]       ; call exit to terminate the program

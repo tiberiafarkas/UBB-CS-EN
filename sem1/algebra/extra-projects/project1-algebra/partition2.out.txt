@@ -1,0 +1,7 @@
+The number of partitions of a set with 3 elements is 5
+The partitions of the set and their corresponding equivalence relations are: 
+{1} {2} {3}  -> {1 , 1} {2 , 2} {3 , 3} 
+{1} {2,3}  -> {1 , 1} {2 , 2} {2 , 3} {3 , 2} {3 , 3} 
+{1,2} {3}  -> {1 , 1} {1 , 2} {2 , 1} {2 , 2} {3 , 3} 
+{1,2,3}  -> {1 , 1} {1 , 2} {1 , 3} {2 , 1} {2 , 2} {2 , 3} {3 , 1} {3 , 2} {3 , 3} 
+{1,3} {2}  -> {1 , 1} {1 , 3} {2 , 2} {3 , 1} {3 , 3} 

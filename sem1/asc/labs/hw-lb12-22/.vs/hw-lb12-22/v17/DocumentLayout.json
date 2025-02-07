@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-22\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{93B2CCB8-D501-4FA3-A4DF-9AFFE1D90451}|hw-lb12-22\\hw-lb12-22.vcxproj|C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{93B2CCB8-D501-4FA3-A4DF-9AFFE1D90451}|hw-lb12-22\\hw-lb12-22.vcxproj|solutionrelative:hw-lb12-22\\hw-lb12-22.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "hw-lb12-22.cpp",
+              "DocumentMoniker": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp",
+              "RelativeDocumentMoniker": "hw-lb12-22\\hw-lb12-22.cpp",
+              "ToolTip": "C:\\Users\\user\\Desktop\\facultate\\asc\\hw-lb12-22\\hw-lb12-22\\hw-lb12-22.cpp",
+              "RelativeToolTip": "hw-lb12-22\\hw-lb12-22.cpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2024-12-29T12:43:39.02Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+sum of even numbers:24
+sum of odd numbers:19
+difference:b

@@ -1,0 +1,57 @@
+     1                                  ;It is given a number in base 2 represented on 32 bits. Write to the console the number in base 16. (use the quick conversion)
+     2                                  
+     3                                  
+     4                                  bits 32 ; assembling for the 32 bits architecture
+     5                                  
+     6                                  ; declare the EntryPoint (a label defining the very first instruction of the program)
+     7                                  global _conversion        
+     8                                  
+     9                                  ; declare external functions needed by our program
+    10                                  ;extern exit               ; tell nasm that exit exists even if we won't be defining it
+    11                                  ;import exit msvcrt.dll    ; exit is a function that ends the calling process. It is defined in msvcrt.dll
+    12                                  
+    13                                  segment data public data use32
+    14                                  
+    15 00000000 303132333435363738-         hexa_digits db "0123456789ABCDEF", 0
+    15 00000009 3941424344454600   
+    16 00000011 09                          result db 9 ;buffer for the result
+    17                                      ;the number on 32 bits can have at most 8 digits in base 16
+    18                                  
+    19                                  segment code public code use32
+    20                                  
+    21                                  _conversion:
+    22                                      ;create a stack frame
+    23 00000000 55                          push ebp
+    24 00000001 89E5                        mov ebp, esp
+    25                                   
+    26 00000003 B908000000                  mov ecx, 8 ;contor for 8 digits
+    27 00000008 8D35[00000000]              lea esi, [hexa_digits]
+    28 0000000E 8D3D[18000000]              lea edi, [result + 7]   ;write from the end of the buffer
+    29                                   
+    30                                      conversion_loop:
+    31                                          ; retreive the function's arguments from the stack
+    32                                          ; [ebp+4] contains the return value 
+    33                                          ; [ebp] contains the ebp value for the caller
+    34                                          
+    35 00000014 8B4508                          mov eax, [ebp+8]
+    36 00000017 83E00F                          and eax, 0xF    ;we take the last 4 digits of the number (1 digit in hexa)
+    37 0000001A 8A1C06                          mov bl, byte [esi + eax]
+    38 0000001D 881F                            mov byte[edi], bl   ;move the digit in buffer
+    39 0000001F 4F                              dec edi
+    40 00000020 C16D0804                        shr dword[ebp+8], 4     ;get rid of the last 4 digits of the number
+    41                                          
+    42 00000024 E2EE                            loop conversion_loop
+    43                                          
+    44 00000026 8D3D[11000000]                  lea edi, [result]
+    45 0000002C C605[19000000]00                mov byte [result + 8], 0 ;null terminator
+    46                                      
+    47                                      
+    48                                      ; the return value of the function should be in EAX
+    49 00000033 89F8                        mov eax, edi
+    50                                      
+    51                                      ; restore the stack frame
+    52 00000035 89EC                        mov esp, ebp
+    53 00000037 5D                          pop ebp
+    54                                      
+    55 00000038 C3                          ret
+    56                                      ; cdecl call convention - the caller will remove the parameters from the stack

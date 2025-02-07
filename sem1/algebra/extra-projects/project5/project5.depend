@@ -1,0 +1,6 @@
+# depslib dependency file v1.0
+1732799561 source:c:\users\user\desktop\facultate\algebra\project5\main.cpp
+	<iostream>
+	<fstream>
+	<vector>
+
