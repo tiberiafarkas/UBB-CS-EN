@@ -1,0 +1,4 @@
+Ion Amariei|Teiului|15|12|20|0
+Gica Petrescu|Maimutei|69|25|4|0
+Jean|Bananei|14|100|2|1
+Eustache|Bombardierului|25|25|5|0

@@ -1,0 +1,3 @@
+Mircea,2,-2
+Daniel,1,-1
+Ariel,1,1

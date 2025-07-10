@@ -1,0 +1,4 @@
+bact1|species1|23|disease1,disease2
+bact2|species3|2|disease1
+bact3|species2|223|disease1,disease2,disease3
+bact4|species2|123|disease1,disease2,disease3

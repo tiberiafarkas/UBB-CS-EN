@@ -1,0 +1,68 @@
+Log files containing we traffic activity are provided.
+All the lines in the files follow the below format:
+[%date %time] %client %url
+
+The URL follows the below format
+%protocol://%domain[/%subdir]*[%file][?%param=%value][#%param=value]*
+
+The parts between [ and ] ar not mandatory to be present.
+The * indicates that the componet before it can occure multiple times
+
+Write a shell script that filters data from one or more files matchin the description above.
+The script will reveive all the input data as command line arguments.
+The script must implement the following command line options:
+
+        -p, --protocol <protocol>
+           - displays all log entries via the provided protocol (1p)
+
+        -c, --client <client>
+           - displays all log entries form the provided client (1p)
+
+        -D, --domain <domain>
+           - displays all log entries of the provided domain (1p)
+
+        -d, --date <time>
+           - displays all log entries during the provided date (1p)
+           - if the date contains the characer '+' or '-' at the end display all activity since/until thae specified date, since if the date ends with a '+' until if the date ends with a '-' (1.5p)
+                example:
+                    * 23/11/2020+ will display all the activity since 23rd of November 2020, included
+                    * 13/12/2019- will display all the activity until 13th of December 2019, included
+
+        -f, --file  <file>
+           - displays all log entries that access the provided file (1p)
+
+        -s, --subdir <subdir/path>
+           - displays all log entries containing the provided path or subdirectory (1p)
+
+        -a, --arguments <argument>
+           - displays all log entries in which the provided argument is set, regardless of the value (0.5p)
+
+        -v, --value <argument=value>
+           - displays all log entries in which the provided argument is set with the value provided (0.5p)
+
+        -t, --top [n] <criteria(client dommain file)>
+           - displays the top n most occuring client/domain/file, depending on the fiteria provided (0.5p for each)
+           - if n is not provided assume its value is set to 5 (0.5p)
+
+NOTES:
+   * for each option you can implement a reverse filter. The reverse filter will be active if the filter criteria starts with the '!' character (0.5p for each)
+          example:
+             if we had:
+               * filter.sh -D !ubbcluj.ro
+                   - will display all log entries of all domains different from ubbcluj.ro
+   * for each otion you can implement multiple criteria search by using the same option multiple times or providing multiple values separated by ','
+          example
+               * filter.sh -D ubbcluj.ro,utcn.ro,rodtube.com
+                 and
+               * filter.sh -D ubbcluj.ro -D utcn.ro -D rodtube.com
+                 must have the same behavior.
+
+SCORING:
+   * In order to pass the exam the script must run without any syntax or runtime errors and you must accumulate at least 5 points.
+   * You will not get a score higher than 10 if you score more than 10 points.
+   * The input data must be validade (1p)
+         - make sure the file/files provided exist and you can read them
+         - make sure the provided arguments are implemented
+         - make sure arguments are provided with aparameter
+   * If you implement both the short and long version of the argumets you receive + 0.5p
+   * If multiple filters are provided the script will apply all the filter on all the logs + 0.5p

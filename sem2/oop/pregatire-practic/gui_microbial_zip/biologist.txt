@@ -1,0 +1,3 @@
+bio1|species1,species2,species3
+bio2|species1,species3
+bio3|species2

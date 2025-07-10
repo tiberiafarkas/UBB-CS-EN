@@ -1,0 +1,4 @@
+Popescu|Piata Unirii nr. 34|8,15
+Ionescu|Closca nr. 3|10,12
+Maria|Eroilor nr. 34A|15,3
+eu|Teodor Mihali 43|5,7

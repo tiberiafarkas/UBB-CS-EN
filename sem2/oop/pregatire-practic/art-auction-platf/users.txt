@@ -1,0 +1,10 @@
+Alice Johnson|collector|1
+Bob Smith|administrator|2
+Charlie Brown|collector|3
+Diana Prince|administrator|4
+Ethan Hunt|collector|5
+Fiona Gallagher|administrator|6
+George Miller|collector|7
+Hannah Baker|administrator|8
+Ian Wright|collector|9
+Jenna Ortega|administrator|10

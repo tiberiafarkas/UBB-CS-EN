@@ -1,0 +1,11 @@
+Star 3|Libra|15|192.5|15
+Star 13|Libra|-25|37.5|25
+Star 14|Pisces|14|113|65
+Star 11|Pisces|-17|322.5|55
+Star 10|Pisces|-13|340|15
+Star 20|Pisces|21|121|15
+jon|Pisces|2|2|35
+fds|Pisces|12|222|22
+asd|Pisces|12|12|12
+Star 4|Taurus|11|125|25
+Star 8|Taurus|-5|225|125

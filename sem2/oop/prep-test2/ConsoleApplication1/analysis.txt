@@ -1,0 +1,4 @@
+Date: 2023.01.01, BMI: 22.500000, Result: OK
+Date: 2023.01.02, BP: 120/80, Result: Not OK
+Date: 2023.02.01, BMI: 23.000000, Result: OK
+Date: 2023.02.02, BP: 130/85, Result: Not OK

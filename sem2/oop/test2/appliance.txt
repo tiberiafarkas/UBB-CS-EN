@@ -1,0 +1,23 @@
+DishWasher
+DW1
+Consumed electricity for one hour : 0.500000
+
+DishWasher
+DW2
+Consumed electricity for one hour : 0.300000
+
+Refrigerator
+R1
+Electricity usage class : A++
+Has freezer : Yes
+
+Refrigerator
+R2
+Electricity usage class : A
+Has freezer : No
+
+Refrigerator
+R3
+Electricity usage class : A++
+Has freezer : No
+

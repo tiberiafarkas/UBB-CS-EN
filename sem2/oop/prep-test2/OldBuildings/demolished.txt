@@ -1,0 +1,12 @@
+Block: Street 2
+Construction Year: 1990
+Total Apartaments: 100
+Occupied Apartaments 4
+House: Street 5
+Construction Year: 1930
+Type: Villa
+Is Historical: No
+House: Street 6
+Construction Year: 2000
+Type: Villa
+Is Historical: No

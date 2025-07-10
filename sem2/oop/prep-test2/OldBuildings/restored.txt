@@ -1,0 +1,4 @@
+House: Street 4
+Construction Year: 1920
+Type: Villa
+Is Historical: Yes

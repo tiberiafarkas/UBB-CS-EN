@@ -1,0 +1,3 @@
+Ion|Piata Unirii,Bl 21 Decembrie,Aurel Vlaicu,|14,12,10
+Mircea|Piezisa,Closca,Aurel vlaicu,|7,22,18
+Pintea|Principala,Eroilor,Teodor Mihali,Closca,|20,2,9

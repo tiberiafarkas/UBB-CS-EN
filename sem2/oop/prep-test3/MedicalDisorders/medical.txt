@@ -1,0 +1,5 @@
+Allergy|Sinusitis|fever,sore troat
+Heart|Angina|chest pressure,shortness of breath
+Allergy|Hives|red welts on the skin
+Lungs|Pneumonia|fever,chills,cough
+Heart|Heart Attack|squeezing sensation of the chest,sweating,nausea

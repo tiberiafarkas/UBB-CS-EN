@@ -1,0 +1,8 @@
+1 1 Alex hahah 12
+5 3 Marian vvvvvv 65 
+2 1 Delia kkpkp 84
+6 3 Cosmin nnnnnn 23
+3 2 Marian asdsa 8
+4 2 Alex asdasdfd 65
+7 1 Marian uuuuuu 0
+8 2 Cosmin rrrrrr 0

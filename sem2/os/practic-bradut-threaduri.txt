@@ -1,0 +1,25 @@
+ 1 The following scenario is given:
+  2 We have a series of pumps and containers.
+  3 Each pump can pump one of 2 types of fuel: resin and activator.
+  4 Each pump has its own fuel capacity.
+  5 The containers are used to prepare a mixture of the 2 previously mentioned fuels.
+  6 Each container has its own different capacity and recipe (amount of resin and activator that i    t must store).
+  7 In order for the mixture to work properly, all the resin must be added before the activator.
+  8 Each series of pumps (resign pumps and activator pumps) will pump fuel in a single container a    t a time, one unit of fuel at a time.
+  9 Once the resin pumps added the right amount of resin into a container, they will start adding     resign into the next available container.
+ 10 The activator pumps will start adding the activator into a container as soon as in the set con    tainer resigns the necessary amount of resin.
+ 11 This process will run until:
+ 12   * all the containers are full
+ 13   * the resin pumps are out of fuel
+ 14   * the activator pumps are out of fuel
+ 15
+ 16 Using threads and syncrinusation mechanisms, write a C program that simulates the scenario des    cribed above.
+ 17 The program will take all the input data via command-line arguments.
+ 18 During the run, the program will display on the standard output messages in order to make it e    asy to follow the whole process.
+ 19
+ 20 To obtain a passing grade:
+ 21  * The program must be compiled using the following command: 'gcc -Wall -g -pthread ... ' with    out any warning or compilation errors.
+ 22  * the program must run without any crashes or runtime errors.
+ 23
+ 24 To obtain a maximum grade:
+ 25  * the program must run without any memory leaks or context errors.
