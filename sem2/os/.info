@@ -1,0 +1,15 @@
+total 80
+-rw-r--r-- 1 tiberia tiberia   541 Jul  7 21:07 1million-files.txt
+-rw-r--r-- 1 tiberia tiberia  9403 Jul  7 00:17 22-june-2023
+-rw-r--r-- 1 tiberia tiberia    44 Jun 15 18:11 a.txt
+drwxr-xr-x 2 tiberia tiberia  4096 Jun 14 14:31 grep-sed-awk
+-rw-r--r-- 1 tiberia tiberia   897 Jun 15 17:38 grep-shell-awk.txt
+-rw-r--r-- 1 tiberia tiberia   145 Jun 15 17:56 nr.txt
+-rw-r--r-- 1 tiberia tiberia   145 Jun 15 18:12 nrcopied.txt
+drwxr-xr-x 4 tiberia tiberia  4096 Jul  9 14:28 preg-shell
+-rwxr-xr-x 1 tiberia tiberia 17512 Jun 15 12:52 proc1
+-rw-r--r-- 1 tiberia tiberia   235 Jun 15 12:52 proc1.c
+-rwx------ 1 tiberia tiberia    99 Jun 15 18:10 read-shell.sh
+drwxr-xr-x 2 tiberia tiberia  4096 Jul  6 21:17 regularexpression
+-rw-r--r-- 1 tiberia tiberia   297 Jun 15 16:32 text.txt
+-rw-r--r-- 1 tiberia tiberia   329 Jun 16 00:37 textcopied.txt
