@@ -1,0 +1,4 @@
+4. RO: Scrieţi o comandă AWK care afişează suma penultimului câmp al tuturor liniilor.
+awk 'BEGIN {FS=" ";sum=0} {sum+=$(NF-1)} END {print sum}' nr.txt
+awk 'BEGIN {FS=" "} {sum+=$(NF-1)} END {print sum}' nr.txt
+

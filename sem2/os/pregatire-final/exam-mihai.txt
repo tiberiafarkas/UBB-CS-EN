@@ -1,0 +1,341 @@
+```
+RO: Dati o expresie regulara care accepta stringuri formate doar din caracterele 1 si 0 si care contin secventa 0110 sau secventa 1001.
+
+EN: Give a regular expression that accepts strings containing only the characters 1 and 0 and that contain the sequence 0110 or the sequence 1001.
+
+Answer:
+"^[01]*(0110)|(1001)[01]*$"
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew02.txt
+RO: Scrieți două comenzi GREP care numără liniile goale dintr-un fișier text.
+EN: Write two GREP commands that count blank lines in a text file.
+
+Answer:
+grep -Ec "^$"
+grep -Evc "^.+$"
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew03.txt
+RO: Se consideră un fișier text care conține pe fiecare linie cuvinte (secvențe nevide de
+litere mari sau mici) separate prin SPAȚII. Scrieți două comenzi SED care interschimbă
+primul cuvânt cu ultimul cuvânt pe fiecare linie a acestui fișier.
+
+EN: Consider a text file that contains words (non-empty sequences of uppercase or lowercase
+letters) separated by SPACES on each line. Write two SED commands that swap the first word
+with the last word on each line of this file.
+
+Answer:
+sed -E 's/^([a-zA-Z]+)([ ]+[a-zA-Z]+)*([a-zA-Z]+)$/\3\2 \1/'
+sed -E 's/^([a-z]+)([ ]+[a-z]+)*([a-z]+)$/\3\2 \1/I'
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew03.txt
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew04.txt
+RO: Scrieţi o comandă AWK care afişează produsul primului şi ultimului câmp de pe fiecare linie dacă ambele câmpuri sunt intregi.
+
+EN: Write an AWK command that displays the product of the first and last field of each line if both fields are integers.
+
+Answer:
+awk '$1 ~ /^[0-9]+$/ && $NF ~ /^[0-9]+$/ { print $1 * $NF }'
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew04.txt
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew05.txt
+RO: Scrieti in doua moduri o linie de comanda in care programul B se executa doar daca programul A s-a executat cu success.
+
+EN: Write in two ways a command line in which program B is executed only if program A has executed successfully.
+
+Answer:
+if A
+then
+    B
+fi
+
+if [ A -eq 0 ]
+then
+    B
+fi
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew06.txt
+RO: Scrieti un script Shell care ia dintr-un fisier a.txt perechi de nume de fisiere si il copiaza pe primul intr-al doilea.
+
+EN: Write a Shell script that reads from file a.txt paris of file names and copies the first into the second.
+
+Answer:
+
+for line in awk '{ print "$1"";""$2" }' a.txt
+do
+    first=`echo "$line" | awk -F; { print $1 }`
+    second=`echo "$line" | awk -F; { print $2 }`
+    cp "$first" "$second"
+done
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew06.txt
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew07.txt
+RO: Considerand ca apelul fork se executa cu succes, cate procese fiu va crea programul de mai jos? Justificati raspunsul.
+
+EN: Considering that the fork call is executed successfully, how many child processes will be created by the program below? Justify your answer.
+
+    int main() {
+        while(wait(NULL) < 0)
+            if(fork() == 0) {
+                exit(0);
+            }
+        }
+        return 0;
+    }
+
+Answer:
+There will be just one child, since when first calling wait the parent process has no children, therefore causing an ECHILD error, entering the loop once and forking once, after which it will return the status code of the child (0), not entering a second time
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew08.txt
+RO: Scrieti un apel exec care execute programul si argumentele date ca argumente programului ./a de mai jos (ex: ./a ls -l /etc/passwd)
+
+EN: Write an exec call that executes the program and arguments given as arguments to program ./a below (i.e. ./a ls -l /etc/passwd)
+
+    int main(int argc, char** argv) {
+        ...
+    }
+
+Answer:
+char **v = malloc(argc);
+for(int i = 1; i < argc; i++) {
+    v[i - 1] = argv[i];
+}
+v[argc - 1] = NULL;
+execvp(v[0], v[0], v + 1);
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew08.txt
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew09.txt
+RO: Trimiteți șirul "Hello\nWorld\n" către comanda wc -l folosind popen în modul scriere.
+EN: Send the string "Hello\nWorld\n" to the wc -l command using popen in write mode.
+
+Answer:
+
+FILE *f = popen("wc -l", "w");
+fprintf(f, "Hello\nWorld\n");
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew09.txt
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew10.txt
+RO: Adăugați codul sursă necesar la fragmentul de cod de mai jos pentru ca "Hello from child!" să fie scris în pipe de către procesul copil, iar procesul părinte să citească și să afișeze acest mesaj la consolă.
+
+EN: Add the necessary source code to the code fragment below so that "Hello from child!" is written to the pipe by the child process, and the parent process reads and prints this message to the console.
+
+Answer:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main() {
+    int p[2]; // p[0] for read, p[1] for write
+    pipe(p);
+
+    pid_t pid = fork();
+
+    if (pid == -1) {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+
+    if (pid == 0) { // Child process
+        // Adauga cod aici / Add code here
+        close(p[0]);
+        char *s = "Hello from child!";
+        int len = (int)strlen(s);
+        write(p[1], &len, sizeof(int));
+        write(p[1], s, strlen(s));
+    } else { // Parent process
+        // Adauga cod aici / Add code here
+        close(p[1]);
+        int l;
+        read(p[0], &l, sizeof(int));
+        char *ss = malloc(l + 1);
+        read(p[0], ss, l);
+        printf("%s\n", ss);
+    }
+
+    return 0;
+}
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew10.txt
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew11.txt
+RO: Discutati durata de executie a programului de mai jos in functie de tipul fisierului abc si alte aspecte relevante.
+
+EN: Discuss the duration of the program below as a function of the abc file type and other relevant aspects.
+
+    int main() {
+        int f;
+        char c;
+        f = open("abc", O_RDONLY);
+        if(f >= 0) {
+            read(f, &c, 1);
+            close(f);
+        }
+        return 0;
+    }
+
+Answer:
+If the "abc" file is a normal file, then the program will last as long as it takes to finish its I/O requests (eg. the time it takes to recieve back the file descriptor of the file after entering its WAIT state, as well as the tile it takes to read the file from the disk, again entering its wait state). If it is the only process running on the processor, this is the case.
+
+if it is not the only process running, then to the duration is added the time other processes are alloted before the scheduler allows the process to run again.
+
+If abc is a fifo, then to all this time it's added the time it takes for a writer to appear (open has blocking behaviour). If no writer appears, the process will run indefinetily, since it will be in a blocked state.
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew12.txt
+RO: Protejati sectiunea critica din programul de mai jos.
+EN: Protect the critical section in the program below.
+
+Answer:
+
+int n = 0;
+
+void* f(void* v){
+        if(n < 500) {
+            n++;
+        }
+        return NULL;
+}
+
+int main(){
+    pthread_t t;
+    pthread_create(&t, NULL, f, NULL);
+    /*
+        There is no critical resource since there is only 1 thread that performs accesses to the resource
+        as the main thread waits for the additional thread to complete, running in a LINEAR fashion.
+
+        A critical resource is defined as a resource that can be accessed concurrently by multiple processes/threads, which therefore needs protection (make sure only one thread accesses it at one time) as to avoid data races
+        */
+    pthread_join(t, NULL);
+    return 0;
+}
+
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew13.txt
+RO: Asigurati-va ca maximum 3 persoane voteaza deodata.
+EN: Insure that at most 3 persons vote simultaneously.
+
+Answer:
+
+sem_t sem;
+
+void* person(void* args){
+    sem_wait(&sem);
+        printf("voting ...\n”);
+    sem_post(&sem);
+        return NULL;
+}
+
+int main(){
+        pthread_t t[100];
+    sem_init(&sem, 0, 3);
+        for(int i=0;i<100;i++){
+                pthread_create(&t[i], NULL, person, NULL);
+        }
+    for(int i=0;i<100;i++){
+                pthread_join(t[i], NULL);
+    }
+    sem_destroy(&sem);
+        return 0;
+}
+
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew14.txt
+RO: Ce face functia pthread_cond_wait cu mutexul primit ca argument?
+EN: What does pthread_cond_wait do with the mutex it gets as an argument?
+
+Answer:
+pthread_cond_wait takes a LOCKED mutex as argument, which  it thereafter UNLOCKS when the process enters its WAIT state. The process will regain control of the UNLOCKED mutex (pthread_signal/broadcast caller must make sure of this) immideately when first occasion arises after being woken up
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew15.txt
+RO: Cum ar fi afectata functionarea unui program daca toate mutex-urile s-ar inlocui cu rwlock-uri si toate apelurile mutex_lock s-ar inlocui cu rwlock_wrlock? Justificati raspunsul.
+
+EN: How would affect the functioning of a program the replacement of all mutexes with rwlocks and all calls to mutex_lock with rwlock_wrlock? Justify your answer.
+
+
+Answer:
+The functionality of the program will remain the same. Mutexes provide mutual exclusions for all threads (doesn't differentiate between writers and readers).
+
+Rwlock makes a differentiation between these 2:
+    - wrlock allows just ONE thread to execute, blocking all other wrlocks and rdlocks (only one writer can 'write' at a time)
+    - rdlock allows MULTIPLE threads to execute, blocking only the calls to wrlock (no writers allowed).
+
+Since we're working only with calls to wrlock, only one thread will be able to execute at a time, maintaining mutual exclusion.
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew16.txt
+RO: Dati valori distincte pentru T, N1, N2, N3 (toate strict pozitive) pentru care programul de mai jos se termina corect.
+
+EN: Give distinct values for T, N1, N2, N3 (all strictly positive) for which the program below finishes correctly.
+
+#include <pthread.h>
+
+pthread_barrier_t b1, b2, b3;
+
+void* f1(void* a) { pthread_barrier_wait(&b1); return NULL; }
+void* f2(void* a) { pthread_barrier_wait(&b2); return NULL; }
+void* f3(void* a) { pthread_barrier_wait(&b3); return NULL; }
+
+int main() {
+    int T, N1, N2, N3;
+
+    pthread_t t[T][3];
+
+    pthread_barrier_init(&b1, NULL, N1);
+    pthread_barrier_init(&b2, NULL, N2);
+    pthread_barrier_init(&b3, NULL, N3);
+
+    for(int i=0; i<T; i++) {
+        pthread_create(&t[i][0], NULL, f1, NULL);
+        pthread_create(&t[i][1], NULL, f2, NULL);
+        pthread_create(&t[i][2], NULL, f3, NULL);
+    }
+
+    for(int i=0; i<T; i++) {
+        pthread_join(t[i][0], NULL);
+        pthread_join(t[i][1], NULL);
+        pthread_join(t[i][2], NULL);
+    }
+
+    pthread_barrier_destroy(&b1);
+    pthread_barrier_destroy(&b2);
+    pthread_barrier_destroy(&b3);
+    return 0;
+}
+
+Answer:
+T = 12
+N1 = 1
+N2 = 3
+N3 = 4
+
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew17.txt
+RO: Ce puteţi face ca programator pentru a preveni deadlock-urile? Justificaţi răspunsul.
+EN: What can you do as a software developer to prevent deadlocks? Justify your answer.
+
+Answer:
+Since deadlocks are caused by 4 main factors, among which circular waiting, the best thing we can do as programmers is get rid of this condition (more reliable and simpler than others).
+Circular waiting is the situation where a chain of processes wait for a resource that is locked, while locking a resource themselves.
+
+A simple way to get rid of this condition is to ensure a clear order for locking/unlocking mutexes and sticking to it.
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew18.txt
+RO: Care este diferenta dintre politicile de planificare SJF si STCF?
+EN: What is the difference between the SJF and STCF scheduling policies?
+
+Answer:
+The SJF (Shortest Job First) checks which job is shorter when they arrive, and places them accordingly. This approach works well if all jobs would arrive at the same time, which is unprobable.
+Jobs that arrive at different times can cause a situation when the longer job that arrived first is placed before the shorter job, but which arrived later, in execution
+
+The STCF fixes this problem by checking each job's time of completion. When a job that has a lower completion time enters the execution, the scheduler pauses the previous (possibly longer) job (puts it into READY) and lets the shorter job execute. After the job's execution, the other process is unpaused.
+
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew19.txt
+RO: Un process are următoarea listă de zone de memorie nealocată: 32, 44, 98. Cum va arăta lista după două apeluri malloc(33) ştiind că se foloseşte algoritmul Worst Fit?
+
+EN: CA process has the following list of unallocated memory zones: 32, 44, 98. What will the list be after two malloc(33) requests given that it uses the Worst Fit algorithm?
+
+Answer:
+
+32, 44, 65 (the 33 memory is placed in the 98 free-memory node)
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew20.txt
+RO: Cum difera un link hard de unul simbolic?
+EN: What are the differences between a hard link and a symbolic link?
+
+Answer:
+A symoblic link links to a FILE PATH. Therefore it can become broken when the path becomes non-existent (the file gets deleted). It does not update the i-node's link count. It can be made cross-partition. IT GETS A NEW I-NUMBER (inode)
+
+A hard link represents a link to the FILE's I-NODE. When it gets made, the i-node's link count gets updated, which causes the file to not get deleted (even if the original path is removed) until after all the references to the inode are removed. It cannot cross partitions. It gets the same I-number (i-node) as the file.
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew20.txt
+/home/xm/exam/os/account/denis.tira/ex1955> vim exam-ew19.txt
+/home/xm/exam/os/account/denis.tira/ex1955> cat exam-ew19.txt
+RO: Un process are următoarea listă de zone de memorie nealocată: 32, 44, 98. Cum va arăta lista după două apeluri malloc(33) ştiind că se foloseşte algoritmul Worst Fit?
+
+EN: CA process has the following list of unallocated memory zones: 32, 44, 98. What will the list be after two malloc(33) requests given that it uses the Worst Fit algorithm?
+
+Answer:
+
+32, 44, 32 (the 33 memory is placed in the 98 free-memory node, and 65)
+if [ `du -b "$s" | awk '{print $1}'` -eq 0 ]; then
+ 15                     echo "$s empty directory"```

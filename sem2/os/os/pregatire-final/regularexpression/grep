@@ -1,0 +1,29 @@
+1.  Numără liniile care nu conțin niciun cuvânt.
+
+grep -E -i -v "^[^.]+$" text.txt | wc -l
+grep -E -i -v "^.+$" text.txt | wc -l
+grep -E "^$" text.txt | wc -l
+grep -E -i "^$" text.txt | wc -l
+
+2. Afișează liniile care încep și se termină cu aceeași literă.
+grep -E "^([a-zA-Z]).*\1$" text.txt
+grep -E -x "^([a-zA-Z]).*\1$" text.txt
+
+3. Dublează ultimul cuvânt de pe fiecare linie.
+sed -E "s/(^.*)(\b[a-zA-Z]+\b$)/\1\2 \2/g" text.txt
+sed -E "s/(^.*)(\b[a-z]+\b$)/\1\2 \2/Ig" text.txt
+
+4. Interschimbă cuvântul al doilea cu penultimul.
+sed -E "s/(.*) (\b[a-zA-Z]+\b) (.*) (\b[a-zA-Z]+\b) (.+$)/\1 \4 \3 \2 \5/g" text.txt
+sed -E "s/(.*) (\b[a-z]+\b) (.*) (\b[a-z]+\b) (.+$)/\1 \4 \3 \2 \5/Ig" text.txt
+
+5. Afișează doar liniile unde suma primului și ultimului câmp este egală cu 100.
+awk -F" " '$1+$NF==100 {print}'
+awk -F" " '$1+$NF==100'
+
+6. Afișează media valorilor din fiecare linie.
+awk '{sum=0} {for (i=1; i<=NF; ++i) {sum+=$i}} {print sum/NF}' nr.txt
+
+
+
+

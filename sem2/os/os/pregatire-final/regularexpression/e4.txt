@@ -1,0 +1,3 @@
+RO: Scrieţi două comenzi SED care afişează dintr-un fişier doar liniile care nu conţin cifra 7.
+sed -E "/(.*[7].*)/d" text.txt
+sed -E "/.*7.*/d" text.txt

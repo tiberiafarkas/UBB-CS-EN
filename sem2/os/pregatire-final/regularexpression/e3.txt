@@ -1,0 +1,7 @@
+2. RO: Daţi cinci comenzi GREP care afişează toate liniile dintr-un fişier care conţin litera "a" mare sau mic.
+grep -E "[aA]" ex.txt
+grep -E -i "a" ex.txt
+grep -E "(.*[aA].*)" ex.txt
+grep -E -i "(.*a.*)" ex.txt
+grep -E "a|A" text.txt
+grep -E -v "^[^aA]*$" text.txt

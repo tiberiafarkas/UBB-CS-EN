@@ -1,0 +1,199 @@
+RO: Daţi o expresie regulară care acceptă orice secvenţă de lungime pară de cuvinte (formate din litere) separate prin spaţii, cu condiţia ca pentru fiecare cuvânt să lungimea şi poziţia în secvenţă să fie ambele pare sau impare. Numărarea cuvintelor începe de la 1. Ex: al 5-lea cuvânt trebuie să aibă lungime impară, iar al 16-lea să aibă lungime pară.
+EN: Give a regular expression that matches any even-length sequence of lower-case words separated by spaces, if for each word its length and its position in the sequence are either both odd or both even. The words ware counted starting with 1. Ex: the 5th word must have odd length and the 16th word must of even length.
+
+Answer:
+(([a-zA-Z][a-zA-Z])*[a-zA-Z] ([a-zA-Z][a-zA-Z])* )
+
+RO: Daţi trei comenzi GREP care afişează dintr-un fişier liniile formate exclusiv dintr-o secvenţă nevidă de litere şi cifre alternativ (ex: a0g sau 1r5m).
+EN: Give three GREP commands that display the lines of a file which consist exclusively of a non-empty sequence of alternating leters and digits (eg a0g or 1r5m)
+
+Answer:
+grep -E -i "(^([a-z][0-9][a-z]?)+$)|(^([0-9][a-z][0-9]?)+$)" text.txt
+grep -E "(^([a-zA-Z][0-9][a-zA-Z]?)+$)|(^([0-9][a-zA-Z][0-9]?)+$)" text.txt
+grep -E -i "(^([a-z]\d[a-z]?)+$)|(^(\d[a-z]\d?)+$)" text.txt
+
+
+RO: Scrieţi două comenzi SED care afişează liniile unui fişier ştergând prima secvenţă nevidă de litere mici.
+EN: Write two SED commands that display a file's lines deleting the first non-empty sequence of lower-case letters
+
+Answer:
+sed -E "s/(\b[a-z]+\b)(.+)/\2/g" text.txt
+sed -E "s/([^a-z]*)([a-z]*)(.*)/\1\3/g" text.txt
+
+RO: Scrieţi o comandă AWK care afişează suma tuturor numerelor dintr-un fişier text ale cărui linii sunt formate din secvenţe de cifre separate prin spaţii.
+EN: Write an AWK command that displays the sum of all the numbers in a text file whose lines consist of sequences of digits separated by spaces.
+
+Answer:
+awk -F" " 'BEGIN {sum=0} {for(i=0; i<=$NF; ++i) sum+=$i} END {print sum}' nr.txt
+
+
+RO: Daţi trei moduri de a afla dimensiunea unui fişier în linia de comandă Linux.
+EN: Give three ways of finding the size of a file on the Linux command line.
+Answer:
+
+ls -l
+stat 
+du -h
+
+RO: Scrieţi o condiţie Shell UNIX care verifică dacă un un fişier există şi utilizatorul curent are vreo permisiune asupra lui.
+EN: Write a UNIX Shell condition that checks whether a file exists and the current user has any permissions on it.
+Answer:
+
+if $(ls -l $file | awk {'print $1'} | grep -E -q -v "^....---...$"); then
+    echo "File exists and user has acces to it"
+else 
+    echo "Condition not met"
+fi
+
+RO: Desenati ierarhia proceselor create de coduld e mai jos, incluzand procesul parinte.
+EN: Draw the hierarchy of processes created by the code below, including the parent process.
+
+    for(i=0; i<3; i++) {
+        if(fork() > 0) {
+            wait(0);
+            wait(0);
+            exit(0);
+        }
+    }
+
+Answer:
+P -> C1 -> C2 -> C3
+
+At fork() a child process is made, in the if structure only the parent enters and there it calls a wait for its child and another wait which will return -1 because it does not have something to wait for, then the parrent process dies. The former child process becomes a parent and the entire circle is redone.
+
+
+RO: Ce va tipări fragmentul de cod de mai jos? Justificaţi răspunsul.
+EN: What will the fragment below print? Justify your answer.
+
+    execl("expr", "expr", "1", "+", "1", NULL);
+    execlp("echo", "echo", "3", NULL);
+    printf("4\n");
+
+Answer:
+I think execl is not right because it requires the entire file path and it provides only the instruction, so the execl returns an error and its job is not accomplished. The second execlp is syntactically correct so it runs correctly and replace all the code, printing 3.
+
+
+RO: De ce descriptorul de fişier returnat de popen trebuie închis cu pclose şi nu cu fclose?
+EN: Explain why the file descriptor returned by popen must be closed with pclose instead of fclose.
+
+Answer:
+The file descriptor returned by popen must be closed with pclose because pclose waits for the process to finish unlike the fclose. And we know that popen opens a process by creating a pipe.
+
+RO: Câte FIFO-uri poate deschide pentru citire un process, dacă FIFO-urile sunt şi vor fi întotdeauna folosite de alte procese doar pentru scriere?
+EN: How many FIFOs can a process open for reading if the FIFOs are and will ever be used by other processes only for writing?
+
+Answer:
+It can open as many FIFOs as the system allows to as long as all these FIFOs are and will be used by other processes only for writing. However, me must be carefull how we are opening the FIFOs for reading and writing because the order might lead to deadlock.
+
+RO: Când aţi folosi execv în locul de execl?
+EN: When would you use execv instead of execl?
+
+Answer:
+I would use execv instead of execl when i have the arguments kept in a vector or when i need to use the list of the arguments provided in the command line.
+
+RO: Ce este o "secţiune critică"?
+EN: What is a "critical section"?
+
+Answer:
+A critical section is a section where the value of a resource can be modified simultaneously by many threads and we might have a race condition. This section must pe protected to avoid concurrent access.
+
+RO: Daţi trei apeluri de funcţii care asigură excludere mutuală.
+EN: Give three function calls that ensure mutual exclusion.
+
+Answer:
+1) pthread_mutex_lock
+2) sem_wait for binary semapohores
+3) pthread_rwlock_wrlock
+
+RO: Care va fi efectul înlocuirii apelurilor la pthread_mutex_lock cu apeluri la sem_post?
+EN: What will be the effect of replacing calls to pthread_mutex_lock with calls to sem_post?
+
+Answer:
+It does not make sense to do something like this. sem_post increases the number of threads which can access simultaneously a critical section and if we have no more a mutex lock, it means that the critical resources might be modified and we could have an undefined behavior.
+
+
+RO: Ce se poate întâmpla dacă funcţia f este rulată de mai multe thread-uri simultane? De ce?
+EN: What could happen if function f were executed by several simultaneous threads? Why?
+
+pthread_mutex_t m[2];
+void* f(void* p) {
+    int id = (int)p;
+    pthread_mutex_t* first = &m[id % 2];
+    pthread_mutex_t* second = &m[(id+1) % 2];
+
+    pthread_mutex_lock(first);
+    pthread_mutex_lock(second);
+    ...
+    pthread_mutex_unlock(second);
+    pthread_mutex_unlock(first);
+}
+
+
+Answer:
+It might result in a deadlock because we are not locking and unlocking the mutexs in the same order, which means that we will have a cicle in the allocation graph of resources leading to a deadlock. 
+
+
+RO: Daţi un exemplu de valori distincte şi mai mari ca 0 pentru T, N1, N2 şi N3 pentru care programul de mai jos se incheie.
+EN: Give an example of distinct values greater than 0 for T, N1, N2, and N3 for which the program below finishes execution.
+
+pthread_barrier_t b1, b2;
+
+void* f1(void* a) {
+    pthread_barrier_wait(&b1);
+    return NULL;
+}
+
+void* f2(void* a) {
+    pthread_barrier_wait(&b2);
+    return NULL;
+}
+
+int main() {
+    int i;
+    pthread_t t[T][2];
+
+    pthread_barrier_init(&b1, NULL, N1);
+    pthread_barrier_init(&b2, NULL, N2);
+    for(i=0; i<T; i++) {
+        pthread_create(&t[i][0], NULL, f1, NULL);
+        pthread_create(&t[i][1], NULL, f2, NULL);
+    }
+    for(i=0; i<T; i++) {
+        pthread_join(t[i][0], NULL);
+        pthread_join(t[i][1], NULL);
+    }
+    pthread_barrier_destroy(&b1);
+    pthread_barrier_destroy(&b2);
+    return NULL;
+}
+
+Answer:
+T = 4
+N1 = 2
+N2 = 1
+
+
+RO: Ce puteţi face ca programator pentru a preveni deadlock-urile?
+EN: What can you do as a software developer to prevent deadlocks?
+
+Answer:
+A deadlock can be caused by many factors such as mutual exclusion, hold & wait, no preemption and circular wait. The best approch we can adopt to prevent a deadlock is to unlock and lock resources in the same order to prevent circular wait and not to have cicles in the allocation graph of resources.
+
+RO: Prin ce tranziţie de stare va trece un process când apelează sem_wait şi în ce condiţii? Justificaţi răspunsul.
+EN: What state transition will a process undergo when it calls sem_wait and under what conditions? Justify your answer.
+
+Answer:
+If the value of the semaphore is 0, the process will be put in the WAIT state, until one slot becomes available. Otherwise, the semaphore won't have effect on the process and it will probably remain in the RUN state.
+
+
+RO: Considerand ca dimensiunea unui bloc este B si dimensiunea unei adrese este A, cate blocuri de date sunt adresate de indirectarea dubla a unui i-nod?
+EN: Considering that the size of a block is B and the size of and address is A, how many data blocks are addressed by the double indirect addressing of an i-node?
+
+Answer:
+B^2/A^2
+
+RO: Cand ati incarca in memorie paginile unui program care tocmai este pornit?
+EN: When would you load into memory the pages of a process that is just starting?
+
+Answer:
+I will load a page when one is requested and then based on the principle of locality, I will also load its neighbours because it is a high probability that they will be also requested soon.

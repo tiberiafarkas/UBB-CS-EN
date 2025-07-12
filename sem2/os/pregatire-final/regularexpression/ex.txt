@@ -1,0 +1,34 @@
+#!/bin/bash
+1.Match words containing exactly 5 characters.
+^[a-zA-Z]{5}$ - inceput de linie/5 caractere/sf de linie
+( |^)+[a-zA-Z]{5}( |$) - spatiu sau inceput de linie/5 caractere/spatiu sau sfarsit de linie
+
+2. Match words containing exactly 4 characters with the first two of them being 'lo'.
+(\s|^)+(lo){1}[a-zA-Z]{2}(\s|$)
+
+3. Match all words containing at least 10 characters.
+( |^)+[a-zA-Z]{10,}( |$)
+
+4. Match words starting with the negative prefix un-.
+( |^)+(un)[a-zA-Z]+( |$)
+
+5. Match words starting with one of the following negative prefixes: im-, in-
+( |^)+((im)|(in))[a-zA-Z]+( |$)
+
+6. Match words ending with the suffix -less.
+( |^)+[a-zA-Z]+(less)( |$)
+
+7. Match words consisting of lower-case letters only.
+( |^)+[a-z]+( |$)
+
+8. Match acronyms, i.e. words consisting of capital letters only.
+( |^)+[A-Z]+( |$)
+
+9. Match acronyms containing at least 2 capital characters.
+( |^)+(.*[A-Z]+.*){2}( |$)+
+
+10. Match possessive nouns/pronouns 'in' singular.
+.+('s){1}( |$)
+
+11. Match years from the 18. century.
+

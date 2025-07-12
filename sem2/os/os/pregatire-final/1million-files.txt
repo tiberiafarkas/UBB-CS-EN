@@ -1,0 +1,10 @@
+11) How many threads will you used for processing a milion files? Justify your answer.
+
+
+I would not use one thread per file, since creating a million threads would be inefficient and likely crash the system.
+
+Instead, I would use a thread pool based on the type of task:
+
+If it's CPU-bound, I would use a number of threads equal to the number of cores (e.g., 8).
+
+If it's I/O-bound (like reading from disk or network), I would use more threads — perhaps 4 to 10 times the number of cores (e.g., 32–80), to allow for waiting during I/O.

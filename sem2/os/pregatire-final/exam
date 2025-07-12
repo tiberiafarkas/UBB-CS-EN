@@ -1,0 +1,154 @@
+====================================================================================
+RO: Folosind popen, scrieti liniile de cod necesare pentru a stoca in variabila n numarul de procese din sistem.
+EN: Using popen, write the necessary lines of code to store in variable n the number of processes in the system.
+
+int n;
+
+Answer:
+FILE *fd = popen("ps -ef | wc -l", "r");
+fscanf(fd, n);
+
+/home/xm/exam/os/account/tiberia.farkas/ex2472> cat exam-rw10.txt
+RO: Ce va afisa procesul parinte in consola?
+
+EN: What will the parent process display in the console?
+
+int main() {
+    int p[2], n = 11;
+    pipe(p);
+
+    close p[1]);
+    if (fork() == 0) {          //child process
+        close(p[0]);
+        n = 7;
+        write([p[1], &n, sizeof(int));
+        close(p[1]);
+        exit(0);
+    }
+
+    read(p[0], &n, sizeof(int));
+    close(p[0];
+    printf("%d\n", n");
+
+    return 0;
+}
+
+Answer:
+The write end of pipe is closed before entering in the child process, that means that the child process can write in the pipe and then in the parent process the read will see end of file and will return 0, so the value of n wont be changed, and at the end the value 11 will be printed.
+/home/xm/exam/os/account/tiberia.farkas/ex2472> cat exam-rw11.txt
+RO: Discutati durata de executie a programului de mai jos in functie de tipul fisierului abc si alte aspecte relevante.
+
+EN: Discuss the duration of the program below as a function of the abc file type and other relevant aspects.
+
+    int main() {
+        int f;
+        char c;
+        f = open("abc", O_RDONLY);
+        if(f >= 0) {
+            read(f, &c, 1);
+            close(f);
+        }
+        return 0;
+    }
+
+Answer:
+If the abc is a regular file then the duration of theprogram is as much as it takes to read the content from the file. During the I/O the process will be put in the WAITING state and after the I/O finises it will run again.
+However, if abc is a FIFO for example, then we will need to add to the duration of the program how much it takes until the other end of the FIFO is opne in O_WRONLY in another process. If the other end won t be ever open, then the program will run to infinite.
+/home/xm/exam/os/account/tiberia.farkas/ex2472> cat exam-rw12.txt
+RO: Faceti modificari minimale programului de mai jos incat sa aiba o sectiune critica si apoi protejati-o.
+EN: Make minimal changes to the program below so that it has a critical section, and then protect it.
+
+Answer:
+
+int n = 0;
+pthread_mutex_t m;
+
+void* f(void* v){
+        pthread_mutex_lock(&m);
+        if(n < 500) {
+            n++;
+        }
+
+        if(n > 600) {
+            n = 0;
+        }
+        pthread_mutex_unlock(&m);
+
+        return NULL;
+}
+
+int main(){
+    pthread_t t[2]; // first we need more threads
+    pthread_mutes_init(&m);
+    for ( int i = 0; i < 2; ++i ) {
+        pthread_create(&t[0], NULL, f, NULL);
+        pthread_create(&t[1], NULL, f, NULL);
+        printf("%d", n);
+   }
+    pthread_join(t, NULL);
+    pthread_mutex_destroy(&m);
+    return 0;
+}
+/home/xm/exam/os/account/tiberia.farkas/ex2472> cat exam-rw13.txt
+RO: Adaugati o linie in programul de mai jos incat thread-urile sa scrie alternativ in consola.
+EN: Add one line in the program below so that the threads will write alternatively in the console.
+
+Answer:
+
+pthread_mutex_t ma, mb;
+
+void* fa(void* args){
+    for(int i=0; i<10; i++) {
+        pthread_mutex_lock(&ma);
+        printf("a\n");
+        pthread_mutex_unlock(&mb);
+    }
+    return NULL;
+}
+
+void* fb(void* args){
+    for(int i=0; i<10; i++) {
+        pthread_mutex_lock(&mb);
+        printf("b\n");
+        pthread_mutex_unlock(&ma);
+    }
+    return NULL;
+}
+
+int main(){
+    pthread_t ta, tb;
+    pthread_mutex_init(&ma, NULL);
+    pthread_mutex_init(&mb, NULL);
+    pthread_create(&ta, NULL, fa, NULL);
+    pthread_create(&tb, NULL, fb, NULL);
+    pthread_join(ta, NULL);
+    pthread_join(tb, NULL);
+    pthread_mutex_destroy(&ma);
+    pthread_mutex_destroy(&mb);
+    return 0;
+}
+/home/xm/exam/os/account/tiberia.farkas/ex2472> vim exam-rw13.txt
+/home/xm/exam/os/account/tiberia.farkas/ex2472> cat exam-rw14.txt
+====================================================================================
+RO: Dati o situatie in care WHILE poate fi inlocuit cu IF in codul de mai jos.
+EN: Give a situation when the WHILE in the code below can be replaced with IF.
+
+int n = 0;
+...
+pthread_mutex_lock(&m);
+while(n < 1000) {
+    pthread_cond_wait(&c, &m);
+}
+...
+pthread_mutex_unlock(&m);
+
+Answer:
+
+/home/xm/exam/os/account/tiberia.farkas/ex2472> vim exam-rw14.txt
+/home/xm/exam/os/account/tiberia.farkas/ex2472> cat exam-rw15.txt
+RO: Cum ar fi afectata functionarea unui program daca toate rwlock-urile s-ar inlocui cu semafoare binare si toate apelurile rwlock_wrlock si rwlock_rdlock s-ar inlocui cu sem_wait? Justificati raspunsul.
+
+EN: How would affect the functioning of a program the replacement of all rwlocks with binary semaphores and all calls to rwlock_wrlock and rwlock_rdlock are replaced with sem_wait? Justify your answer.
+
+Answer:
+The binary semaphores works the same as a mutex, that means that only one mutex can read and change the value of the critical resources. As what it takes for rwlock, more readers can consult the value of the resources and only one writer can modify the value of the resoures. So if we will replace the rwlock_wrlock and rwlock_rdlock with sem wait that we will have mutual exclusion and we will have only one reader and writer at the same time

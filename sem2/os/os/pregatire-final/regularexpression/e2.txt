@@ -1,0 +1,5 @@
+1. RO: Daţi trei expresii regulare care acceptă orice număr ne-negativ multiplu de 5.
+\b((^| )[0-9]*[05])\b
+\b(^[0-9]*[05]| [0-9]*[05])\b
+\b^[0-9]*[05]| [0-9]*[05]\b
+

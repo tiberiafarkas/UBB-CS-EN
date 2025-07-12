@@ -1,0 +1,19 @@
+Ierarhiile:
+
+1)
+if( fork() == 0 && fork() )
+	fork();
+
+2) if( fork() || fork() ) fork();
+
+3) for( int i = 0; i < 4; i++ )
+	int c = fork();
+	if( c == 0 ) i++;
+	else i += 2;
+
+4) How many children will the following prgram have (ecluding the parent)
+(all calls to fork calls are successful)
+int c = (int)NULL;
+do {
+	if( wait(c) == 0 ) c = fork();
+} while( wait(c) == 0 && fork() );
