@@ -1,0 +1,6 @@
+Ion,10,21
+Vasile,50,102
+Popa,1,4
+Mihai,50,100
+Gheorghe,12,20
+Maria,35,88

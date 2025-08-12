@@ -1,0 +1,5 @@
+1,Theodor Mihali,8,29
+2000,Dorobantilor,50,100
+25,Aurel Vlaicu,14,41
+7,George Cosbuc,10,27
+74,George Enescu,48,132
