@@ -1,0 +1,3 @@
+sports|football,swimming,tennis,volleyball,basketball,baseball
+lecture|reading,writing,theatre,literature
+informatics|mathmatics,programming,computers,informatics

@@ -1,0 +1,9 @@
+ion|ion@gmail.com|running,fotball,tennis,|sports
+ana|ana@gmail.com|reading,writing,mathematics,physics,|lecture
+maia|maia@gmail.com|mathematics,programming,computers,running,|informatics
+delia|gmail.com|running,football,tennis,|sports
+pop|pop@gmail.com|movies,reading,writing,photography,|informatics
+name:|e-mail:|interests:,|informatics
+name:3|e-mail:3|interests:34,|unassigned
+eu|test|abc,|unassigned
+pol|lklj|interests1,|unassigned
